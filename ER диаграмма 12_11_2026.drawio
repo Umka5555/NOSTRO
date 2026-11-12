@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="BAWQOAYcwKNgWnOn0zm9" name="Страница-1">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="KkbB33QN5z2efbu4WXSl-14" parent="1" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" value="Позиция на дату по счёту" vertex="1">
+          <mxGeometry height="220" width="190" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="KkbB33QN5z2efbu4WXSl-15" parent="KkbB33QN5z2efbu4WXSl-14" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;rotatable=0;part=1;html=1;whiteSpace=wrap;" value="&amp;nbsp; &amp;nbsp; - идентификатор: String {id}&lt;br&gt;&amp;nbsp; &amp;nbsp; - дата: DateTime&lt;br&gt;&amp;nbsp; &amp;nbsp; - сумма: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - остаток: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - валюта: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетОтправителя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетПолучателя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - статус: String&lt;br&gt;&amp;nbsp; &amp;nbsp; + отправить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + запросить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + обработать(): void" vertex="1">
+          <mxGeometry height="170" width="190" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="KkbB33QN5z2efbu4WXSl-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="ER диаграмма" vertex="1">
+          <mxGeometry height="60" width="120" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-1" parent="1" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" value="Платеж" vertex="1">
+          <mxGeometry height="280" width="190" x="250" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-2" parent="LYUmmNKfmtettx-OSzIj-1" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;rotatable=0;part=1;html=1;whiteSpace=wrap;" value="&amp;nbsp; &amp;nbsp; - идентификатор: String {id}&lt;br&gt;&amp;nbsp; &amp;nbsp; - дата: DateTime&lt;br&gt;&amp;nbsp; &amp;nbsp; - сумма: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - счёт НОСТРО: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - направление: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - валюта: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетОтправителя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетПолучателя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - статус: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - типСделки: String&lt;br&gt;&amp;nbsp; &amp;nbsp; + отправить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + запросить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + обработать(): void" vertex="1">
+          <mxGeometry height="230" width="190" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-3" parent="1" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" value="Счет НОСТРО" vertex="1">
+          <mxGeometry height="190" width="190" x="300" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-4" parent="LYUmmNKfmtettx-OSzIj-3" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;rotatable=0;part=1;html=1;whiteSpace=wrap;" value="&amp;nbsp; &amp;nbsp; - дата: DateTime&amp;nbsp; &amp;nbsp;&amp;nbsp;&lt;br&gt;&amp;nbsp; &amp;nbsp; - номер: String {id}&lt;br&gt;&amp;nbsp; &amp;nbsp; - валюта: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - остаток: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - владелец: String&lt;br&gt;&amp;nbsp; &amp;nbsp; + получитьОстаток(): Double&lt;br&gt;&amp;nbsp; &amp;nbsp; + обновитьОстаток(сумма: Double): void" vertex="1">
+          <mxGeometry height="140" width="190" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-5" parent="1" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" value="Сделка" vertex="1">
+          <mxGeometry height="280" width="190" x="580" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-6" parent="LYUmmNKfmtettx-OSzIj-5" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;rotatable=0;part=1;html=1;whiteSpace=wrap;" value="&amp;nbsp; &amp;nbsp; - идентификатор: String {id}&lt;br&gt;&amp;nbsp; &amp;nbsp; - дата: DateTime&lt;br&gt;&amp;nbsp; &amp;nbsp; - сумма: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - счёт НОСТРО: Double&lt;br&gt;&amp;nbsp; &amp;nbsp; - направление: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - валюта: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетОтправителя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - счетПолучателя: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - статус: String&lt;br&gt;&amp;nbsp; &amp;nbsp; - типСделки: String&lt;br&gt;&amp;nbsp; &amp;nbsp; + отправить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + запросить(): void&lt;br&gt;&amp;nbsp; &amp;nbsp; + обработать(): void" vertex="1">
+          <mxGeometry height="230" width="190" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-7" parent="1" style="swimlane;childLayout=stackLayout;horizontal=1;startSize=50;horizontalStack=0;rounded=1;fontSize=14;fontStyle=0;strokeWidth=2;resizeParent=0;resizeLast=1;shadow=0;dashed=0;align=center;arcSize=4;whiteSpace=wrap;html=1;" value="Валюта" vertex="1">
+          <mxGeometry height="120" width="190" x="580" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-8" parent="LYUmmNKfmtettx-OSzIj-7" style="align=left;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;fontSize=12;verticalAlign=top;rotatable=0;part=1;html=1;whiteSpace=wrap;" value="&amp;nbsp; &amp;nbsp; - идентификатор: String {id}&lt;br&gt;&amp;nbsp; &amp;nbsp; - дата: DateTime&lt;br&gt;&amp;nbsp; &amp;nbsp; - валюта: String&lt;br&gt;&amp;nbsp;&amp;nbsp;" vertex="1">
+          <mxGeometry height="70" width="190" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-12" edge="1" parent="1" source="LYUmmNKfmtettx-OSzIj-4" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;startArrow=ERone;startFill=0;" target="KkbB33QN5z2efbu4WXSl-15" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="380.3299999999999" y="342.9999999999999" as="sourcePoint" />
+            <mxPoint x="220" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-17" edge="1" parent="1" source="LYUmmNKfmtettx-OSzIj-8" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;startArrow=ERone;startFill=0;" target="LYUmmNKfmtettx-OSzIj-3" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="440" y="892" as="sourcePoint" />
+            <mxPoint x="360" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-18" edge="1" parent="1" source="LYUmmNKfmtettx-OSzIj-8" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0;exitDx=0;exitDy=0;startArrow=ERone;startFill=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" target="LYUmmNKfmtettx-OSzIj-1" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="400.57" y="584.33" as="sourcePoint" />
+            <mxPoint x="640" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-19" edge="1" parent="1" source="LYUmmNKfmtettx-OSzIj-5" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0.25;exitDx=0;exitDy=0;startArrow=ERone;startFill=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" target="LYUmmNKfmtettx-OSzIj-2" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="691" y="429" as="sourcePoint" />
+            <mxPoint x="560" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-20" edge="1" parent="1" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;startArrow=ERone;startFill=0;" target="LYUmmNKfmtettx-OSzIj-2" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="490" y="900" as="sourcePoint" />
+            <mxPoint x="70" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LYUmmNKfmtettx-OSzIj-21" edge="1" parent="1" source="KkbB33QN5z2efbu4WXSl-14" style="edgeStyle=entityRelationEdgeStyle;fontSize=12;html=1;endArrow=ERoneToMany;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.5;exitDx=0;exitDy=0;startArrow=ERone;startFill=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" target="LYUmmNKfmtettx-OSzIj-1" value="">
+          <mxGeometry height="100" relative="1" width="100" x="-0.3409" as="geometry">
+            <mxPoint x="201" y="439" as="sourcePoint" />
+            <mxPoint x="90" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
