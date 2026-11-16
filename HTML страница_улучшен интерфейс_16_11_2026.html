@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</title>
+    <style>
+        /* Фон всей страницы */
+        body {
+            background-color: lightblue;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Заголовок главной страницы */
+        h1 {
+            color: navy;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        /* Основной текст до окон */
+        .user-info {
+            text-align: center;
+            margin: 5px 0 15px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Контейнер для двух колонок */
+        .main-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: flex-start;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Настройка колонок */
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Стили для самого "окна" */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 350px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        /* Стили для полей ввода */
+        .input-group {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group label {
+            margin-bottom: 0;
+            white-space: nowrap;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+
+        /* Стиль для поля с ошибкой */
+        .input-group input.error {
+            border-color: #dc3545 !important;
+            background-color: #fff8f8;
+        }
+
+        /* Контейнер для двух маленьких окон */
+        .inner-windows-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* Стили для самих маленьких окон */
+        .inner-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .inner-card h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .inner-card p {
+            margin: 0;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Стили для кнопок */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-ok, .btn-reset {
+            flex: 1;
+            padding: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-ok {
+            background-color: #0056b3;
+        }
+
+        .btn-ok:hover {
+            background-color: #004494;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-ok:active, .btn-reset:active {
+            transform: scale(0.98); /* Легкий эффект нажатия */
+        }
+
+        /* Всплывающее уведомление (Toast) */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #28a745;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 15px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        /* Класс для показа уведомления */
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</h1>
+    <div class="user-info">
+        Авторизован: <b>Позиционер - Иванов И.И.</b>
+    </div>
+
+    <!-- Всплывающее уведомление -->
+    <div id="toast" class="toast">Данные успешно сохранены!</div>
+
+    <!-- Общий контейнер, который ставит колонки в ряд -->
+    <div class="main-container">
+
+        <!-- ЛЕВАЯ КОЛОНКА -->
+        <div class="left-column">
+            
+            <!-- Окно 1: НОСТРО ПОЗИЦИИ -->
+            <div class="card">
+                <h2>НОСТРО ПОЗИЦИИ</h2>
+                
+                <div class="input-group">
+                    <label for="nostro">Счёт НОСТРО:</label>
+                    <input type="text" id="nostro" name="nostro" placeholder="Введите номер счёта" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="date">Дата:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="balance">Входящий остаток:</label>
+                    <input type="number" id="balance" name="balance" placeholder="0.00" min="0" required>
+                </div>
+
+                <div class="inner-windows-container">
+                    <div class="inner-card">
+                        <h3>Платежи входящие</h3>
+                        <p>Сумма: 0 руб.</p>
+                    </div>
+                    <div class="inner-card">
+                        <h3>Платежи исходящие</h3>
+                        <p>Сумма: 0 руб.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Окно 2: Редактирование остатка -->
+            <div class="card">
+                <h2>Редактирование остатка</h2>
+                
+                <div class="input-group">
+                    <label for="date2">Дата:</label>
+                    <input type="date" id="date2" name="date2" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="account2">Счёт:</label>
+                    <input type="text" id="account2" name="account2" placeholder="Введите счёт" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="current-balance">Текущий остаток:</label>
+                    <input type="number" id="current-balance" name="current-balance" placeholder="0.00" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="new-balance">Новый остаток:</label>
+                    <input type="number" id="new-balance" name="new-balance" placeholder="0.00" min="0" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="currency">Валюта:</label>
+                    <input type="text" id="currency" name="currency" placeholder="Например, RUB" required>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-reset" onclick="resetForm()">Очистить</button>
+                    <button class="btn-ok" onclick="validateAndSave()">ОК</button>
+                </div>
+            </div>
+
+        </div> <!-- Конец левой колонки -->
+
+        <!-- ПРАВАЯ КОЛОНКА -->
+        <div class="right-column">
+            
+            <!-- Окно 3: FX Deals -->
+            <div class="card">
+                <h2>Сделка АИС «Межбанковский обмен валют»</h2>
+                
+                <div class="input-group">
+                    <label for="fx-number">Номер:</label>
+                    <input type="text" id="fx-number" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="fx-type">Вид:</label>
+                    <input type="text" id="fx-type" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="fx-date">Дата:</label>
+                    <input type="date" id="fx-date">
+                </div>
+                <div class="input-group">
+                    <label for="fx-start">Дата начала:</label>
+                    <input type="date" id="fx-start">
+                </div>
+                <div class="input-group">
+                    <label for="fx-end">Дата окончания:</label>
+                    <input type="date" id="fx-end">
+                </div>
+                <div class="input-group">
+                    <label for="fx-sum">Сумма:</label>
+                    <input type="number" id="fx-sum" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label for="fx-status">Статус:</label>
+                    <input type="text" id="fx-status" placeholder="...">
+                </div>
+
+                <button class="btn-ok" onclick="showToast('Сделка FX успешно получена!')">Получить</button>
+            </div>
+
+            <!-- Окно 4: MM Deals -->
+            <div class="card">
+                <h2>Сделка Межбанковские кредиты и депозиты</h2>
+                
+                <div class="input-group">
+                    <label for="mm-number">Номер:</label>
+                    <input type="text" id="mm-number" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="mm-type">Вид:</label>
+                    <input type="text" id="mm-type" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="mm-date">Дата:</label>
+                    <input type="date" id="mm-date">
+                </div>
+                <div class="input-group">
+                    <label for="mm-start">Дата начала:</label>
+                    <input type="date" id="mm-start">
+                </div>
+                <div class="input-group">
+                    <label for="mm-end">Дата окончания:</label>
+                    <input type="date" id="mm-end">
+                </div>
+                <div class="input-group">
+                    <label for="mm-sum">Сумма:</label>
+                    <input type="number" id="mm-sum" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label for="mm-status">Статус:</label>
+                    <input type="text" id="mm-status" placeholder="...">
+                </div>
+
+                <button class="btn-ok" onclick="showToast('Сделка MM успешно получена!')">Получить</button>
+            </div>
+
+        </div> <!-- Конец правой колонки -->
+
+    </div> <!-- Конец общего контейнера -->
+
+    <!-- Скрипт для интерактивности -->
+    <script>
+        // Функция для показа всплывающего уведомления
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            
+            // Скрываем через 3 секунды
+            setTimeout(function() {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        // Функция для проверки полей и "сохранения"
+        function validateAndSave() {
+            // Находим все обязательные поля внутри левой колонки
+            const inputs = document.querySelectorAll('.left-column input[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                // Удаляем старый класс ошибки
+                input.classList.remove('error');
+                
+                // Если поле пустое, добавляем класс ошибки
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            if (isValid) {
+                showToast('Остаток успешно изменен!');
+                // Здесь в будущем можно добавить код для отправки данных на сервер
+            } else {
+                showToast('Пожалуйста, заполните выделенные поля!');
+            }
+        }
+
+        // Функция для очистки формы (левой колонки)
+        function resetForm() {
+            const inputs = document.querySelectorAll('.left-column input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('error');
+            });
+            showToast('Форма очищена');
+        }
+    </script>
+</body>
+</html>
