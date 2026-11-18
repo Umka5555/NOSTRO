@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Вход — АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        background: linear-gradient(135deg, #e6f0fa 0%, #c9ddf2 100%);
+        font-family: Arial, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .login-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 30px 28px;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 10px 30px rgba(0,43,92,0.25);
+        border: 1px solid #b0c4de;
+    }
+    .login-card h1 {
+        color: #002b5c;
+        text-align: center;
+        font-size: 18px;
+        margin: 0 0 6px 0;
+        line-height: 1.35;
+    }
+    .login-card .subtitle {
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 22px;
+    }
+    .input-group {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .input-group label {
+        font-weight: bold;
+        font-size: 12px;
+        color: #444;
+    }
+    .input-group input {
+        padding: 9px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 13px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .input-group input:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 5px rgba(0,86,179,0.3);
+    }
+    .input-group input.error {
+        border-color: #dc3545 !important;
+        background-color: #fff8f8;
+    }
+    .btn-login {
+        width: 100%;
+        padding: 10px;
+        background-color: #0056b3;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: background-color 0.3s;
+    }
+    .btn-login:hover { background-color: #004494; }
+    .btn-login:active { transform: scale(0.98); }
+
+    .error-msg {
+        display: none;
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 8px 10px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .error-msg.show { display: block; }
+
+    .hint {
+        margin-top: 18px;
+        font-size: 11px;
+        color: #777;
+        text-align: center;
+        border-top: 1px dashed #ddd;
+        padding-top: 12px;
+        line-height: 1.5;
+    }
+    .hint b { color: #002b5c; }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+    <h1>АИС «ПЛАТЕЖИ И ПОЗИЦИИ<br>ПО СЧЕТАМ НОСТРО»</h1>
+    <div class="subtitle">Авторизация пользователя</div>
+
+    <div id="errorMsg" class="error-msg"></div>
+
+    <form onsubmit="return handleLogin(event)">
+        <div class="input-group">
+            <label for="login">Логин (ФИО):</label>
+            <input type="text" id="login" placeholder="Введите ФИО" autocomplete="username">
+        </div>
+        <div class="input-group">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" placeholder="Введите пароль" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login">Войти</button>
+    </form>
+
+    <div class="hint">
+        Учётные данные для входа:<br>
+
+    </div>
+</div>
+
+<script>
+    const USERS = [
+        { role: 'Администратор', fio: 'Иванов',   password: '1234' },
+        { role: 'Дилер',         fio: 'Петров',   password: '1234' },
+        { role: 'Позиционер',    fio: 'Сидоров',  password: '1234' },
+        { role: 'Руководитель',  fio: 'Студент',  password: '1234' }
+    ];
+
+    const MAIN_PAGE = 'HTML страница_17_11_2026_v4.html';
+
+    function showError(text) {
+        const box = document.getElementById('errorMsg');
+        box.textContent = text;
+        box.classList.add('show');
+        document.getElementById('login').classList.add('error');
+        document.getElementById('password').classList.add('error');
+    }
+    function clearError() {
+        document.getElementById('errorMsg').classList.remove('show');
+        document.getElementById('login').classList.remove('error');
+        document.getElementById('password').classList.remove('error');
+    }
+
+    function handleLogin(event) {
+        event.preventDefault();
+        clearError();
+
+        const login = document.getElementById('login').value.trim();
+        const password = document.getElementById('password').value;
+
+        if (!login || !password) { showError('Заполните логин и пароль!'); return false; }
+
+        const user = USERS.find(u =>
+            u.fio.toLowerCase() === login.toLowerCase() && u.password === password
+        );
+
+        if (!user) { showError('Неверный логин или пароль!'); return false; }
+
+        sessionStorage.setItem('auth_user', JSON.stringify({ fio: user.fio, role: user.role }));
+        window.location.href = MAIN_PAGE;
+        return false;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('login').focus();
+        ['login', 'password'].forEach(id => {
+            document.getElementById(id).addEventListener('input', clearError);
+        });
+    });
+</script>
+</body>
+</html>

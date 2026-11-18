@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</title>
+    <style>
+        body {
+            background-color: #e6f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #002b5c;
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .user-info {
+            text-align: center;
+            margin: 5px 0 15px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        .user-info b { color: #002b5c; }
+
+        .main-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            align-items: flex-start;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            max-width: 1500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            min-width: 300px;
+            max-width: 360px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border: 1px solid #b0c4de;
+            box-sizing: border-box;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #002b5c;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .card h3 {
+            font-size: 14px;
+            color: #333;
+            margin: 10px 0 5px 0;
+        }
+
+        .input-group {
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group label {
+            white-space: nowrap;
+            font-weight: bold;
+            color: #444;
+            font-size: 12px;
+            width: 115px;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 5px 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 4px rgba(0,86,179,0.3);
+        }
+        .input-group input.error {
+            border-color: #dc3545 !important;
+            background-color: #fff8f8;
+        }
+
+        .inner-windows-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .inner-card {
+            background-color: #f0f6ff;
+            border: 1px solid #cce0ff;
+            border-radius: 6px;
+            padding: 8px;
+            flex: 1;
+            text-align: center;
+        }
+        .inner-card h3 { margin: 0 0 3px 0; font-size: 12px; color: #333; }
+        .inner-card p { margin: 0; font-size: 11px; color: #555; }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .btn-ok, .btn-reset {
+            flex: 1;
+            padding: 8px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-ok { background-color: #0056b3; }
+        .btn-ok:hover { background-color: #004494; }
+        .btn-reset { background-color: #6c757d; }
+        .btn-reset:hover { background-color: #5a6268; }
+        .btn-ok:active, .btn-reset:active { transform: scale(0.98); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #6c757d;
+            margin-left: 5px;
+        }
+        .status-sformirovan { background-color: #ffc107; color: #000; }
+        .status-otpravlen { background-color: #28a745; }
+        .status-izmenen { background-color: #17a2b8; }
+        .status-ispravlen { background-color: #fd7e14; }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #28a745;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .toast.error { background-color: #dc3545; }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #002b5c;
+            margin: 12px 0 6px 0;
+            border-left: 3px solid #0056b3;
+            padding-left: 6px;
+        }
+
+        .link-info {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* === РАЗГРАНИЧЕНИЕ ДОСТУПА === */
+        body.admin-mode .main-container > .column { display: none; }
+        body.admin-mode .main-container > .column.column-admin { display: flex; }
+        body.admin-mode .main-container {
+            max-width: 420px;
+            flex-direction: column;
+            align-items: center;
+        }
+        body.admin-mode .main-container > .column.column-admin {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        /* === СТИЛИ ДЛЯ ТАБЛИЦЫ УЧЁТНЫХ ДАННЫХ === */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .users-table th {
+            background-color: #f0f6ff;
+            color: #002b5c;
+            padding: 5px;
+            border: 1px solid #cce0ff;
+            text-align: left;
+        }
+        .users-table td {
+            padding: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        .users-table tr:hover { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+
+    <script>
+        (function () {
+            let auth = null;
+            try { auth = JSON.parse(sessionStorage.getItem('auth_user') || 'null'); } catch (e) {}
+
+            if (!auth) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const info = document.querySelector('.user-info');
+                if (info) {
+                    info.innerHTML = 'Авторизован: <b>' + auth.role + ' — ' + auth.fio +
+                                     '</b> | Роль: <b>' + auth.role + '</b>';
+                }
+                if (auth.role === 'Администратор') {
+                    document.body.classList.add('admin-mode');
+                    renderUsersTable(); // Отрисовываем список пользователей
+                }
+            });
+        })();
+    </script>
+
+    <h1>АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</h1>
+    <div class="user-info">
+        Авторизован: <b>Позиционер — Иванов И.И.</b> | Роль: <b>Позиционер</b>
+    </div>
+
+    <div id="toast" class="toast">Данные успешно сохранены!</div>
+
+    <div class="main-container">
+
+        <!-- КОЛОНКА 1: ПЛАТЕЖ + СТАТУС -->
+        <div class="column">
+            <div class="card">
+                <h2>Платёж <span id="pay-status-badge" class="status-badge status-sformirovan">Сформирован</span></h2>
+                <div class="input-group">
+                    <label for="pay-id">Идентификатор:</label>
+                    <input type="text" id="pay-id" placeholder="Введите ID">
+                </div>
+                <div class="input-group">
+                    <label for="pay-date">Дата:</label>
+                    <input type="date" id="pay-date">
+                </div>
+                <div class="input-group">
+                    <label for="pay-sum">Сумма:</label>
+                    <input type="number" id="pay-sum" placeholder="0.00" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="pay-nostro">Счёт НОСТРО:</label>
+                    <input type="text" id="pay-nostro" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="pay-direction">Направление:</label>
+                    <select id="pay-direction">
+                        <option value="Входящий">Входящий</option>
+                        <option value="Исходящий">Исходящий</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="pay-currency">Валюта:</label>
+                    <input type="text" id="pay-currency" placeholder="RUB, USD, EUR...">
+                </div>
+                <div class="input-group">
+                    <label for="pay-sender">Счёт Отправителя:</label>
+                    <input type="text" id="pay-sender" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="pay-receiver">Счёт Получателя:</label>
+                    <input type="text" id="pay-receiver" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="pay-deal-type">Тип Сделки:</label>
+                    <select id="pay-deal-type">
+                        <option value="FX">FX Deals</option>
+                        <option value="MM">MM Deals</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-reset" onclick="resetPaymentForm()">Очистить</button>
+                    <button class="btn-ok" onclick="submitPayment()">Отправить</button>
+                </div>
+                <div class="link-info">Связь: Сделка FX/MM → порождает → Платёж</div>
+            </div>
+
+            <div class="card">
+                <h2>Статусы платежа</h2>
+                <div class="input-group">
+                    <label for="status-select">Установить статус:</label>
+                    <select id="status-select">
+                        <option value="сформирован">Сформирован</option>
+                        <option value="отправлен">Отправлен</option>
+                        <option value="изменён">Изменён</option>
+                        <option value="исправлен">Исправлен</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button class="btn-ok" onclick="applyStatus()">Применить</button>
+                </div>
+                <div class="link-info">Связь: Платёж 1 — 0..* Статус</div>
+            </div>
+        </div>
+
+        <!-- КОЛОНКА 2: ПОЗИЦИИ + СЧЕТ НОСТРО -->
+        <div class="column">
+            <div class="card">
+                <h2>НОСТРО Позиции</h2>
+                <div class="input-group">
+                    <label for="pos-nostro">Счёт НОСТРО:</label>
+                    <input type="text" id="pos-nostro" placeholder="Введите номер счёта" required>
+                </div>
+                <div class="input-group">
+                    <label for="pos-date">Дата:</label>
+                    <input type="date" id="pos-date" required>
+                </div>
+                <div class="input-group">
+                    <label for="pos-sum">Сумма:</label>
+                    <input type="number" id="pos-sum" placeholder="0.00" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="pos-balance">Остаток:</label>
+                    <input type="number" id="pos-balance" placeholder="0.00" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="pos-currency">Валюта:</label>
+                    <input type="text" id="pos-currency" placeholder="RUB">
+                </div>
+                <div class="input-group">
+                    <label for="pos-sender">Счёт Отправителя:</label>
+                    <input type="text" id="pos-sender" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="pos-receiver">Счёт Получателя:</label>
+                    <input type="text" id="pos-receiver" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="pos-status">Статус:</label>
+                    <input type="text" id="pos-status" placeholder="Статус">
+                </div>
+                <div class="button-group">
+                    <button class="btn-reset" onclick="resetPositionsForm()">Очистить</button>
+                    <button class="btn-ok" onclick="submitPosition()">Сохранить</button>
+                </div>
+                <div class="link-info">Связь: Позиции 1..* — 1 Счёт НОСТРО</div>
+            </div>
+
+            <div class="card">
+                <h2>Счёт НОСТРО</h2>
+                <div class="input-group">
+                    <label for="acc-number">Номер:</label>
+                    <input type="text" id="acc-number" placeholder="Номер счёта">
+                </div>
+                <div class="input-group">
+                    <label for="acc-date">Дата:</label>
+                    <input type="date" id="acc-date">
+                </div>
+                <div class="input-group">
+                    <label for="acc-currency">Валюта:</label>
+                    <input type="text" id="acc-currency" placeholder="RUB">
+                </div>
+                <div class="input-group">
+                    <label for="acc-balance">Остаток:</label>
+                    <input type="number" id="acc-balance" placeholder="0.00" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="acc-owner">Владелец:</label>
+                    <input type="text" id="acc-owner" placeholder="Наименование">
+                </div>
+                <div class="button-group">
+                    <button class="btn-reset" onclick="resetAccountForm()">Очистить</button>
+                    <button class="btn-ok" onclick="updateAccountBalance()">Обновить остаток</button>
+                </div>
+                <div class="link-info">Связь: Платёж 0..* — 1 Счёт НОСТРО</div>
+            </div>
+        </div>
+
+        <!-- КОЛОНКА 3: УЧЁТНЫЕ ДАННЫЕ + РОЛИ + ФУНКЦИИ (ТОЛЬКО ДЛЯ АДМИНА) -->
+        <div class="column column-admin">
+            <!-- === НОВЫЙ БЛОК: УЧЁТНЫЕ ДАННЫЕ === -->
+            <div class="card">
+                <h2>Учётные данные для входа</h2>
+                <table class="users-table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Роль</th>
+                            <th>ФИО (Логин)</th>
+                            <th>Пароль</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Заполняется скриптом -->
+                    </tbody>
+                </table>
+                <div class="section-title" style="margin-top: 15px;">Добавить пользователя</div>
+                <div class="input-group">
+                    <label for="new-user-role">Роль:</label>
+                    <select id="new-user-role">
+                        <option value="Администратор">Администратор</option>
+                        <option value="Дилер">Дилер</option>
+                        <option value="Позиционер">Позиционер</option>
+                        <option value="Руководитель">Руководитель</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="new-user-fio">ФИО (Логин):</label>
+                    <input type="text" id="new-user-fio" placeholder="Например: Смирнов">
+                </div>
+                <div class="input-group">
+                    <label for="new-user-pass">Пароль:</label>
+                    <input type="text" id="new-user-pass" placeholder="Пароль">
+                </div>
+                <div class="button-group">
+                    <button class="btn-ok" onclick="addNewUser()">Добавить</button>
+                </div>
+                <div class="link-info">Связь: Учётные записи пользователей системы</div>
+            </div>
+            <!-- === КОНЕЦ НОВОГО БЛОКА === -->
+
+            <!-- Окно: Роль -->
+            <div class="card">
+                <h2>Роль пользователя</h2>
+                <div class="input-group">
+                    <label for="role-id">Идентификатор:</label>
+                    <input type="text" id="role-id" placeholder="ID роли" value="R-001">
+                </div>
+                <div class="input-group">
+                    <label for="role-director">Руководитель:</label>
+                    <input type="text" id="role-director" placeholder="ФИО">
+                </div>
+                <div class="input-group">
+                    <label for="role-dealer">Дилер:</label>
+                    <input type="text" id="role-dealer" placeholder="ФИО">
+                </div>
+                <div class="input-group">
+                    <label for="role-positioner">Позиционер:</label>
+                    <input type="text" id="role-positioner" placeholder="ФИО" value="Иванов И.И.">
+                </div>
+                <div class="button-group">
+                    <button class="btn-ok" onclick="saveRole()">Сохранить роль</button>
+                </div>
+                <div class="link-info">Связь: Роль 1 — 0..* Платёж / Позиции</div>
+            </div>
+
+            <!-- Окно: Функции -->
+            <div class="card">
+                <h2>Функции</h2>
+                <div class="input-group">
+                    <label for="func-initiate">Инициирует:</label>
+                    <input type="text" id="func-initiate" placeholder="Роль" value="Дилер">
+                </div>
+                <div class="input-group">
+                    <label for="func-approve">Утверждает:</label>
+                    <input type="text" id="func-approve" placeholder="Роль" value="Руководитель">
+                </div>
+                <div class="input-group">
+                    <label for="func-edit">Редактирует:</label>
+                    <input type="text" id="func-edit" placeholder="Роль" value="Позиционер">
+                </div>
+                <div class="button-group">
+                    <button class="btn-ok" onclick="showToast('Функции сохранены!')">Сохранить</button>
+                </div>
+                <div class="link-info">Связь: Функции 0..* — 1 Роль</div>
+            </div>
+        </div>
+
+        <!-- КОЛОНКА 4: СДЕЛКИ FX / MM -->
+        <div class="column">
+            <div class="card">
+                <h2>Сделка FX Deals</h2>
+                <div class="input-group">
+                    <label for="fx-number">Номер:</label>
+                    <input type="text" id="fx-number" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="fx-type">Вид:</label>
+                    <input type="text" id="fx-type" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="fx-date">Дата:</label>
+                    <input type="date" id="fx-date">
+                </div>
+                <div class="input-group">
+                    <label for="fx-start">Дата начала:</label>
+                    <input type="date" id="fx-start">
+                </div>
+                <div class="input-group">
+                    <label for="fx-end">Дата окончания:</label>
+                    <input type="date" id="fx-end">
+                </div>
+                <div class="input-group">
+                    <label for="fx-sum">Сумма:</label>
+                    <input type="number" id="fx-sum" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label for="fx-status">Статус:</label>
+                    <input type="text" id="fx-status" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="fx-contragent">Контрагент:</label>
+                    <input type="text" id="fx-contragent" placeholder="Наименование">
+                </div>
+                <button class="btn-ok" onclick="generatePaymentFromDeal('FX')">Создать платёж</button>
+                <div class="link-info">Связь: FX_Сделка 1 — 0..* Платёж</div>
+            </div>
+
+            <div class="card">
+                <h2>Сделка MM Deals</h2>
+                <div class="input-group">
+                    <label for="mm-number">Номер:</label>
+                    <input type="text" id="mm-number" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="mm-type">Вид:</label>
+                    <input type="text" id="mm-type" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="mm-date">Дата:</label>
+                    <input type="date" id="mm-date">
+                </div>
+                <div class="input-group">
+                    <label for="mm-start">Дата начала:</label>
+                    <input type="date" id="mm-start">
+                </div>
+                <div class="input-group">
+                    <label for="mm-end">Дата окончания:</label>
+                    <input type="date" id="mm-end">
+                </div>
+                <div class="input-group">
+                    <label for="mm-sum">Сумма:</label>
+                    <input type="number" id="mm-sum" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label for="mm-status">Статус:</label>
+                    <input type="text" id="mm-status" placeholder="...">
+                </div>
+                <div class="input-group">
+                    <label for="mm-contragent">Контрагент:</label>
+                    <input type="text" id="mm-contragent" placeholder="Наименование">
+                </div>
+                <button class="btn-ok" onclick="generatePaymentFromDeal('MM')">Создать платёж</button>
+                <div class="link-info">Связь: MM_Сделка 1 — 0..* Платёж</div>
+            </div>
+        </div>
+
+        <!-- КОЛОНКА 5: НСИ И ОТЧЕТЫ -->
+        <div class="column">
+            <div class="card">
+                <h2>НСИ: Справочные данные</h2>
+                <div class="input-group">
+                    <label for="nsi-code">Код:</label>
+                    <input type="text" id="nsi-code" placeholder="Код">
+                </div>
+                <div class="input-group">
+                    <label for="nsi-type">Тип:</label>
+                    <input type="text" id="nsi-type" placeholder="Валюта / Контрагент...">
+                </div>
+                <div class="input-group">
+                    <label for="nsi-value">Значение:</label>
+                    <input type="text" id="nsi-value" placeholder="Значение">
+                </div>
+                <button class="btn-ok" onclick="showToast('Справочные данные получены!')">Получить значение</button>
+                <div class="link-info">Связь: НСИ 0..* — 0..* Счета / Справочники</div>
+            </div>
+
+            <div class="card">
+                <h2>Отчёты</h2>
+                <div class="input-group">
+                    <label for="report-id">Идентификатор:</label>
+                    <input type="text" id="report-id" placeholder="ID">
+                </div>
+                <div class="input-group">
+                    <label for="report-date">Дата:</label>
+                    <input type="date" id="report-date">
+                </div>
+                <div class="input-group">
+                    <label for="report-type">Тип:</label>
+                    <select id="report-type">
+                        <option value="Тикет сделки">Тикет сделки</option>
+                        <option value="Список сделок">Список сделок</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="report-data">Данные:</label>
+                    <input type="text" id="report-data" placeholder="Описание">
+                </div>
+                <button class="btn-ok" onclick="showToast('Отчёт выгружен!')">Выгрузить</button>
+                <div class="link-info">Связь: Сделки / Счета / Платежи → Отчёт</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ========== Общие функции ==========
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+
+        // ========== Платежи ==========
+        function submitPayment() {
+            const id = document.getElementById('pay-id').value.trim();
+            const sum = document.getElementById('pay-sum').value.trim();
+            const nostr = document.getElementById('pay-nostro').value.trim();
+            if (!id || !sum || !nostr) {
+                showToast('Заполните Идентификатор, Сумму и Счёт НОСТРО!', true);
+                return;
+            }
+            const sumVal = parseFloat(sum);
+            if (isNaN(sumVal) || sumVal <= 0) {
+                showToast('Сумма должна быть положительным числом!', true);
+                return;
+            }
+            showToast('Платёж успешно отправлен!');
+            document.getElementById('pay-status-badge').textContent = 'Отправлен';
+            document.getElementById('pay-status-badge').className = 'status-badge status-otpravlen';
+        }
+
+        function resetPaymentForm() {
+            document.querySelectorAll('input[id^="pay-"]').forEach(el => {
+                el.value = '';
+                el.classList.remove('error');
+            });
+            document.getElementById('pay-status-badge').textContent = 'Сформирован';
+            document.getElementById('pay-status-badge').className = 'status-badge status-sformirovan';
+            showToast('Форма платежа очищена');
+        }
+
+        function applyStatus() {
+            const status = document.getElementById('status-select').value;
+            const badge = document.getElementById('pay-status-badge');
+            const statusMap = {
+                'сформирован': 'status-sformirovan',
+                'отправлен': 'status-otpravlen',
+                'изменён': 'status-izmenen',
+                'исправлен': 'status-ispravlen'
+            };
+            badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            badge.className = 'status-badge ' + (statusMap[status] || '');
+            showToast('Статус изменён на: ' + status);
+        }
+
+        // ========== Позиции ==========
+        function submitPosition() {
+            const nostr = document.getElementById('pos-nostro').value.trim();
+            const date = document.getElementById('pos-date').value;
+            if (!nostr || !date) {
+                showToast('Заполните Счёт НОСТРО и Дату!', true);
+                return;
+            }
+            showToast('Позиция успешно сохранена!');
+        }
+
+        function resetPositionsForm() {
+            ['pos-nostro','pos-date','pos-sum','pos-balance','pos-currency','pos-sender','pos-receiver','pos-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            showToast('Форма позиции очищена');
+        }
+
+        // ========== Счёт НОСТРО ==========
+        function updateAccountBalance() {
+            const number = document.getElementById('acc-number').value.trim();
+            const newBalance = document.getElementById('acc-balance').value;
+            if (!number || newBalance === '') {
+                showToast('Заполните Номер счёта и Остаток!', true);
+                return;
+            }
+            showToast('Остаток по счёту ' + number + ' обновлён!');
+        }
+
+        function resetAccountForm() {
+            ['acc-number','acc-date','acc-currency','acc-balance','acc-owner'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            showToast('Форма счёта очищена');
+        }
+
+        // ========== Роли и функции ==========
+        function saveRole() {
+            showToast('Роль пользователя сохранена!');
+        }
+
+        // ========== Порождение платежа из сделки ==========
+        function generatePaymentFromDeal(dealType) {
+            const prefix = dealType === 'FX' ? 'fx' : 'mm';
+            const sum = document.getElementById(prefix + '-sum').value;
+            const number = document.getElementById(prefix + '-number').value;
+            if (!sum || !number) {
+                showToast('Заполните Номер и Сумму сделки ' + dealType + '!', true);
+                return;
+            }
+            document.getElementById('pay-sum').value = sum;
+            document.getElementById('pay-deal-type').value = dealType;
+            document.getElementById('pay-id').value = 'PAY-' + dealType + '-' + Date.now().toString().slice(-6);
+            showToast('Платёж сформирован из сделки ' + dealType + ' (Сумма: ' + sum + ')');
+            document.querySelector('.column:nth-child(1)').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ========== УЧЁТНЫЕ ДАННЫЕ (АДМИН) ==========
+        // Базовые пользователи из Excel (если localStorage пуст)
+        const DEFAULT_USERS = [
+            { role: 'Администратор', fio: 'Иванов',   password: '1234' },
+            { role: 'Дилер',         fio: 'Петров',   password: '1234' },
+            { role: 'Позиционер',    fio: 'Сидоров',  password: '1234' },
+            { role: 'Руководитель',  fio: 'Студент',  password: '1234' }
+        ];
+
+        function getUsers() {
+            const saved = localStorage.getItem('system_users');
+            return saved ? JSON.parse(saved) : DEFAULT_USERS;
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('system_users', JSON.stringify(users));
+        }
+
+        function renderUsersTable() {
+            const tbody = document.querySelector('#users-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const users = getUsers();
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${u.role}</td>
+                    <td>${u.fio}</td>
+                    <td>${u.password}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addNewUser() {
+            const role = document.getElementById('new-user-role').value;
+            const fio = document.getElementById('new-user-fio').value.trim();
+            const pass = document.getElementById('new-user-pass').value.trim();
+
+            if (!fio || !pass) {
+                showToast('Заполните ФИО и Пароль!', true);
+                return;
+            }
+
+            const users = getUsers();
+            
+            // Проверка на дубликат
+            if (users.some(u => u.fio.toLowerCase() === fio.toLowerCase())) {
+                showToast('Пользователь с таким ФИО уже существует!', true);
+                return;
+            }
+
+            users.push({ role: role, fio: fio, password: pass });
+            saveUsers(users);
+            renderUsersTable();
+
+            // Очищаем поля
+            document.getElementById('new-user-fio').value = '';
+            document.getElementById('new-user-pass').value = '';
+
+            showToast('Пользователь "' + fio + '" успешно добавлен!');
+        }
+    </script>
+</body>
+</html>
