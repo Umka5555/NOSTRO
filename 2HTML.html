@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>АИС «ПЛАТЕЖИ И ПОЗИЦИИ ПО СЧЕТАМ НОСТРО»</title>
+    <style>
+        body {
+            background-color: #e6f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #002b5c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        .sidebar h2 {
+            text-align: center;
+            font-size: 16px;
+            padding: 20px 10px;
+            margin: 0;
+            border-bottom: 1px solid #004494;
+            background-color: #001f42;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: #cce0ff;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #004494;
+            transition: background 0.3s, color 0.3s;
+        }
+        .menu-btn:hover {
+            background-color: #004494;
+            color: white;
+        }
+        .menu-btn.active {
+            background-color: #0056b3;
+            color: white;
+            font-weight: bold;
+            border-left: 4px solid #fff;
+        }
+        .user-info {
+            padding: 15px 20px;
+            margin-top: auto;
+            font-size: 12px;
+            background-color: #001f42;
+            border-top: 1px solid #004494;
+        }
+        .logout-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-btn:hover { background-color: #c82333; }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            background-color: #e6f0fa;
+        }
+
+        .tab-content {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s;
+        }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #b0c4de;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #002b5c;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-group label {
+            white-space: nowrap;
+            font-weight: bold;
+            color: #444;
+            font-size: 12px;
+            width: 130px;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: #0056b3;
+        }
+
+        .button-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-ok, .btn-reset {
+            flex: 1;
+            padding: 10px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-ok { background-color: #0056b3; }
+        .btn-ok:hover { background-color: #004494; }
+        .btn-reset { background-color: #6c757d; }
+        .btn-reset:hover { background-color: #5a6268; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            margin-left: 10px;
+        }
+        .status-sformirovan { background-color: #ffc107; color: #000; }
+        .status-otpravlen { background-color: #28a745; }
+        .status-izmenen { background-color: #17a2b8; }
+        .status-ispravlen { background-color: #fd7e14; }
+
+        .users-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        .users-table th { background-color: #f0f6ff; color: #002b5c; padding: 8px; border: 1px solid #cce0ff; text-align: left; }
+        .users-table td { padding: 8px; border: 1px solid #e0e0e0; }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #28a745;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .toast.error { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>АИС НОСТРО</h2>
+        <button class="menu-btn active" onclick="openTab('tab-dashboard', this)">  Главная</button>
+        <button class="menu-btn" onclick="openTab('tab-payments', this)">Платежи</button>
+        <button class="menu-btn" onclick="openTab('tab-positions', this)"> Позиции</button>
+        <button class="menu-btn" onclick="openTab('tab-accounts', this)"> Редактирование остатков</button>
+        <button class="menu-btn" onclick="openTab('tab-deals', this)"> Сделки FX/MM</button>
+        <button class="menu-btn" onclick="openTab('tab-nsi', this)"> НСИ и Отчёты</button>
+        <button class="menu-btn admin-only" onclick="openTab('tab-admin', this)">⚙️ Администратор</button>
+        
+        <div class="user-info" id="user-info-block">
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="toast" class="toast">Данные сохранены!</div>
+
+        <!-- ВКЛАДКА: ГЛАВНАЯ -->
+        <div id="tab-dashboard" class="tab-content active">
+            <h1 style="color: #002b5c; text-align: center; margin-top: 0;">Добро пожаловать в систему</h1>
+            <p style="text-align: center; color: #666;">Выберите необходимый раздел в меню слева для начала работы.</p>
+            <div class="card-grid" style="margin-top: 30px;">
+                <div class="card" style="text-align: center;">
+                    <h2>Баланс НОСТРО</h2>
+                    <p style="font-size: 24px; color: #28a745; font-weight: bold;">1 250 000.00 RUB</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h2>Активные позиции</h2>
+                    <p style="font-size: 24px; color: #0056b3; font-weight: bold;">14</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h2>Платежи в обработке</h2>
+                    <p style="font-size: 24px; color: #ffc107; font-weight: bold;">3</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: ПЛАТЕЖИ -->
+        <div id="tab-payments" class="tab-content">
+            <div class="card-grid">
+                <div class="card">
+                    <h2>Новый платёж <span id="pay-status-badge" class="status-badge status-sformirovan">Сформирован</span></h2>
+                    <div class="input-group"><label>Идентификатор:</label><input type="text" id="pay-id" placeholder="Введите ID"></div>
+                    <div class="input-group"><label>Дата:</label><input type="date" id="pay-date"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="pay-sum" placeholder="0.00" min="0"></div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pay-nostro" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Направление:</label>
+                        <select id="pay-direction"><option value="Входящий">Входящий</option><option value="Исходящий">Исходящий</option></select>
+                    </div>
+                    <div class="input-group"><label>Валюта:</label>
+                        <select id="pay-currency"><option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option></select>
+                    </div>
+                    <div class="input-group"><label>Счёт Отправителя:</label><input type="text" id="pay-sender" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Счёт Получателя:</label><input type="text" id="pay-receiver" placeholder="Номер счёта"></div>
+                    <div class="button-group">
+                        <button class="btn-reset" onclick="resetPaymentForm()">Очистить</button>
+                        <button class="btn-ok" onclick="submitPayment()">Отправить</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Управление статусами</h2>
+                    <div class="input-group">
+                        <label>Установить статус:</label>
+                        <select id="status-select">
+                            <option value="сформирован">Сформирован</option>
+                            <option value="отправлен">Отправлен</option>
+                            <option value="изменён">Изменён</option>
+                            <option value="исправлен">Исправлен</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-ok" onclick="applyStatus()">Применить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: ПОЗИЦИИ -->
+        <div id="tab-positions" class="tab-content">
+            <div class="card-grid">
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>НОСТРО Позиции</h2>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pos-nostro" placeholder="Введите номер"></div>
+                    <div class="input-group"><label>Дата:</label><input type="date" id="pos-date"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="pos-sum" placeholder="0.00"></div>
+                    <div class="input-group"><label>Остаток:</label><input type="number" id="pos-balance" placeholder="0.00"></div>
+                    <div class="input-group"><label>Валюта:</label>
+                        <select id="pos-currency"><option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option></select>
+                    </div>
+                    <div class="input-group"><label>Статус:</label>
+                        <select id="pos-status"><option value="Активна">Активна</option><option value="Закрыта">Закрыта</option></select>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn-ok" onclick="submitPosition()">Сохранить позицию</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: СЧЕТА НОСТРО -->
+        <div id="tab-accounts" class="tab-content">
+            <div class="card-grid">
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>Счёт НОСТРО</h2>
+                    
+                    <div class="input-group">
+                        <label>Номер счёта:</label>
+                        <input type="text" id="acc-number" placeholder="Введите номер" oninput="loadAccountBalance()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Текущий остаток:</label>
+                        <!-- Поле только для чтения -->
+                        <input type="text" id="acc-current-balance" value="0.00" readonly style="background-color: #f0f6ff; font-weight: bold; color: #002b5c;">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Новый остаток:</label>
+                        <input type="number" id="acc-new-balance" placeholder="Введите новую сумму" step="0.01">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Контрагент:</label>
+                        <input type="text" id="acc-owner" placeholder="Наименование">
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-ok" onclick="confirmAccountBalance()">Подтвердить</button>
+                        <button class="btn-reset" onclick="revertAccountBalance()">Вернуть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: СДЕЛКИ -->
+        <div id="tab-deals" class="tab-content">
+            <div class="card-grid">
+                <div class="card">
+                    <h2>Сделка FX Deals</h2>
+                    <div class="input-group"><label>Номер:</label><input type="text" id="fx-number"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="fx-sum"></div>
+                    <div class="input-group"><label>Контрагент:</label><input type="text" id="fx-contragent"></div>
+                    <button class="btn-ok" onclick="generatePaymentFromDeal('FX')">Создать платёж</button>
+                </div>
+                <div class="card">
+                    <h2>Сделка MM Deals</h2>
+                    <div class="input-group"><label>Номер:</label><input type="text" id="mm-number"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="mm-sum"></div>
+                    <div class="input-group"><label>Контрагент:</label><input type="text" id="mm-contragent"></div>
+                    <button class="btn-ok" onclick="generatePaymentFromDeal('MM')">Создать платёж</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: НСИ -->
+        <div id="tab-nsi" class="tab-content">
+            <div class="card-grid">
+                <div class="card">
+                    <h2>НСИ Справочники</h2>
+                    <div class="input-group"><label>Код:</label><input type="text" id="nsi-code"></div>
+                    <div class="input-group"><label>Тип:</label><input type="text" id="nsi-type"></div>
+                    <button class="btn-ok" onclick="showToast('Данные получены!')">Найти</button>
+                </div>
+                <div class="card">
+                    <h2>НСИ Отчёты</h2>
+                    <div class="input-group"><label>Тип отчёта:</label>
+                        <select id="report-type"><option>Тикет сделки</option><option>Список сделок</option></select>
+                    </div>
+                    <button class="btn-ok" onclick="showToast('Отчёт сформирован!')">Выгрузить</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ВКЛАДКА: АДМИНИСТРАТОР -->
+        <div id="tab-admin" class="tab-content">
+            <div class="card-grid">
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>Учётные данные для входа</h2>
+                    <table class="users-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Роль</th>
+                                <th>ФИО (Логин)</th>
+                                <th>Пароль</th>
+                                <th style="width: 140px; text-align: center;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+                    <h3 id="form-title">Добавить пользователя</h3>
+                    <input type="hidden" id="edit-user-index" value="">
+
+                    <div class="input-group"><label>Роль:</label>
+                        <select id="new-user-role"><option>Администратор</option><option>Дилер</option><option>Позиционер</option><option>Руководитель</option></select>
+                    </div>
+                    <div class="input-group"><label>ФИО:</label><input type="text" id="new-user-fio"></div>
+                    <div class="input-group"><label>Пароль:</label><input type="text" id="new-user-pass"></div>
+
+                    <div class="button-group">
+                        <button class="btn-ok" id="btn-save-user" style="width: 200px;" onclick="saveUser()">Добавить</button>
+                        <button class="btn-reset" id="btn-cancel-edit" style="width: 100px; display: none;" onclick="cancelEdit()">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== АВТОРИЗАЦИЯ И РОЛИ ==========
+        let auth = null;
+        try { auth = JSON.parse(sessionStorage.getItem('auth_user') || 'null'); } catch (e) {}
+
+        if (!auth) {
+            window.location.replace('1Login.html');
+        } else {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('user-info-block').innerHTML = 
+                    'Вы вошли как:<br><b>' + auth.fio + '</b><br>(' + auth.role + ')' +
+                    '<button class="logout-btn" onclick="logout()">Выйти</button>';
+                
+                if (auth.role === 'Администратор') {
+                    document.querySelectorAll('.menu-btn').forEach(btn => {
+                        if (!btn.classList.contains('admin-only')) btn.style.display = 'none';
+                    });
+                    const adminBtn = document.querySelector('.admin-only');
+                    if (adminBtn) openTab('tab-admin', adminBtn);
+                    renderUsersTable();
+                } else if (auth.role === 'Руководитель') {
+                    renderUsersTable();
+                } else {
+                    document.querySelector('.admin-only').style.display = 'none';
+                }
+            });
+        }
+
+        function logout() {
+            sessionStorage.removeItem('auth_user');
+            window.location.href = '1Login.html';
+        }
+
+        // ========== ЛОГИКА ВКЛАДОК ==========
+        function openTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        }
+
+        // ========== ПЛАТЕЖИ ==========
+        function submitPayment() {
+            const id = document.getElementById('pay-id').value.trim();
+            const sum = document.getElementById('pay-sum').value.trim();
+            if (!id || !sum) { showToast('Заполните ID и Сумму!', true); return; }
+            showToast('Платёж отправлен!');
+            document.getElementById('pay-status-badge').textContent = 'Отправлен';
+            document.getElementById('pay-status-badge').className = 'status-badge status-otpravlen';
+        }
+        function resetPaymentForm() {
+            document.querySelectorAll('#tab-payments input').forEach(el => el.value = '');
+            document.getElementById('pay-status-badge').textContent = 'Сформирован';
+            document.getElementById('pay-status-badge').className = 'status-badge status-sformirovan';
+        }
+        function applyStatus() {
+            const status = document.getElementById('status-select').value;
+            const badge = document.getElementById('pay-status-badge');
+            const statusMap = { 'сформирован': 'status-sformirovan', 'отправлен': 'status-otpravlen', 'изменён': 'status-izmenen', 'исправлен': 'status-ispravlen' };
+            badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            badge.className = 'status-badge ' + statusMap[status];
+            showToast('Статус изменён!');
+        }
+
+        // ========== ДЕЙСТВИЯ ИЗ ДРУГИХ ВКЛАДОК ==========
+        function generatePaymentFromDeal(type) {
+            showToast('Платёж сформирован из сделки ' + type + '! Перейдите во вкладку Платежи.');
+            document.getElementById('pay-id').value = 'PAY-' + type + '-' + Date.now().toString().slice(-6);
+        }
+        function submitPosition() { showToast('Позиция сохранена!'); }
+        function updateAccountBalance() { showToast('Остаток обновлён!'); }
+
+                // ========== СЧЕТА НОСТРО (УПРАВЛЕНИЕ ОСТАТКОМ) ==========
+        
+        // Переменная для хранения предыдущего значения (история)
+        let previousBalanceValue = "0.00";
+
+        // 1. Загрузка счета (имитация получения данных из БД)
+        function loadAccountBalance() {
+            const accNumber = document.getElementById('acc-number').value.trim();
+            
+            // В реальной БД здесь будет fetch() к PHP скрипту.
+            // Пока используем заглушку для теста:
+            if (accNumber !== "") {
+                // Подставляем "текущее" значение из базы
+                const dbValue = "1 250 000.00"; 
+                document.getElementById('acc-current-balance').value = dbValue;
+                document.getElementById('acc-owner').value = "ОАО 'Пример'";
+                
+                // Запоминаем это значение как предыдущее
+                previousBalanceValue = dbValue;
+                
+                // Очищаем поле нового остатка
+                document.getElementById('acc-new-balance').value = '';
+            } else {
+                document.getElementById('acc-current-balance').value = "0.00";
+                document.getElementById('acc-owner').value = "";
+                previousBalanceValue = "0.00";
+            }
+        }
+
+        // 2. Подтверждение (Текущее = Новое)
+        function confirmAccountBalance() {
+            const accNumber = document.getElementById('acc-number').value.trim();
+            const newBalanceInput = document.getElementById('acc-new-balance').value.trim();
+
+            if (!accNumber) {
+                showToast('Введите номер счёта!', true); return;
+            }
+            if (newBalanceInput === '') {
+                showToast('Введите новый остаток!', true); return;
+            }
+
+            // Запоминаем текущее значение (до изменения) в переменную для кнопки "Вернуть"
+            const currentBalanceElement = document.getElementById('acc-current-balance');
+            previousBalanceValue = currentBalanceElement.value;
+
+            // Форматируем новое значение (например, 1250000 -> 1 250 000.00)
+            const numValue = parseFloat(newBalanceInput);
+            const formattedNewValue = numValue.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Заменяем текущее на новое
+            currentBalanceElement.value = formattedNewValue;
+            
+            // Очищаем поле ввода
+            document.getElementById('acc-new-balance').value = '';
+            
+            showToast('Остаток успешно обновлён!');
+        }
+
+        // 3. Вернуть (Возврат к предыдущему значению)
+        function revertAccountBalance() {
+            const currentBalanceElement = document.getElementById('acc-current-balance');
+            
+            // Если предыдущее значение отличается от текущего, значит мы можем сделать откат
+            if (previousBalanceValue !== currentBalanceElement.value) {
+                currentBalanceElement.value = previousBalanceValue;
+                showToast('Изменения отменены. Возвращено предыдущее значение.');
+            } else {
+                showToast('Нет изменений для отмены', true);
+            }
+            
+            // Очищаем поле ввода нового значения при отмене
+            document.getElementById('acc-new-balance').value = '';
+        }
+        // ========== АДМИНКА (УЧЁТНЫЕ ЗАПИСИ) ==========
+        const DEFAULT_USERS = [
+            { role: 'Администратор', fio: 'Иванов', password: '1234' },
+            { role: 'Дилер', fio: 'Петров', password: '1234' },
+            { role: 'Позиционер', fio: 'Сидоров', password: '1234' },
+            { role: 'Руководитель', fio: 'Студент', password: '1234' }
+        ];
+
+        function getUsers() {
+            const saved = localStorage.getItem('system_users');
+            return saved ? JSON.parse(saved) : DEFAULT_USERS;
+        }
+        
+        function saveUsersToStorage(users) {
+            localStorage.setItem('system_users', JSON.stringify(users));
+        }
+
+        function renderUsersTable() {
+            const tbody = document.querySelector('#users-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const users = getUsers();
+            users.forEach((u, index) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${u.role}</td>
+                        <td>${u.fio}</td>
+                        <td>${u.password}</td>
+                        <td style="text-align: center;">
+                            <button onclick="editUser(${index})" style="background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; margin-right:5px;">✏️</button>
+                            <button onclick="deleteUser(${index})" style="background:#dc3545; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function saveUser() {
+            const role = document.getElementById('new-user-role').value;
+            const fio = document.getElementById('new-user-fio').value.trim();
+            const pass = document.getElementById('new-user-pass').value.trim();
+            const editIndex = document.getElementById('edit-user-index').value;
+
+            if (!fio || !pass) { showToast('Заполните ФИО и Пароль!', true); return; }
+            
+            let users = getUsers();
+
+            if (editIndex !== "") {
+                const idx = parseInt(editIndex);
+                if (users.some((u, i) => i !== idx && u.fio.toLowerCase() === fio.toLowerCase())) {
+                    showToast('Пользователь с таким ФИО уже существует!', true); return;
+                }
+                users[idx] = { role: role, fio: fio, password: pass };
+                saveUsersToStorage(users);
+                renderUsersTable();
+                showToast('Пользователь обновлен!');
+                cancelEdit();
+            } else {
+                if (users.some(u => u.fio.toLowerCase() === fio.toLowerCase())) {
+                    showToast('Пользователь с таким ФИО уже существует!', true); return;
+                }
+                users.push({ role: role, fio: fio, password: pass });
+                saveUsersToStorage(users);
+                renderUsersTable();
+                showToast('Пользователь добавлен!');
+                cancelEdit();
+            }
+        }
+
+        function editUser(index) {
+            const users = getUsers();
+            const user = users[index];
+
+            document.getElementById('new-user-role').value = user.role;
+            document.getElementById('new-user-fio').value = user.fio;
+            document.getElementById('new-user-pass').value = user.password;
+            document.getElementById('edit-user-index').value = index;
+
+            document.getElementById('form-title').textContent = 'Редактировать пользователя';
+            document.getElementById('btn-save-user').textContent = 'Сохранить изменения';
+            document.getElementById('btn-cancel-edit').style.display = 'block';
+            
+            document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            document.getElementById('edit-user-index').value = '';
+            document.getElementById('new-user-role').selectedIndex = 0;
+            document.getElementById('new-user-fio').value = '';
+            document.getElementById('new-user-pass').value = '';
+
+            document.getElementById('form-title').textContent = 'Добавить пользователя';
+            document.getElementById('btn-save-user').textContent = 'Добавить';
+            document.getElementById('btn-cancel-edit').style.display = 'none';
+        }
+
+        function deleteUser(index) {
+            const users = getUsers();
+            const user = users[index];
+            
+            if (user.fio === auth.fio) {
+                showToast('Вы не можете удалить самого себя!', true);
+                return;
+            }
+
+            if (confirm('Вы уверены, что хотите удалить пользователя "' + user.fio + '"?')) {
+                users.splice(index, 1);
+                saveUsersToStorage(users);
+                renderUsersTable();
+                showToast('Пользователь удален!');
+                
+                if (document.getElementById('edit-user-index').value !== "") {
+                    cancelEdit();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
