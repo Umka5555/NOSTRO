@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1i69ev6" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:collaboration id="Collaboration_0r20ghj">
+    <bpmn:participant id="Participant_0tu3kfm" name="Позиции" processRef="Process_1rzmo0w" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_1rzmo0w" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_10lobbu">
+      <bpmn:lane id="Lane_0h9s3rm" name="Позиционер">
+        <bpmn:extensionElements>
+          <zeebe:properties>
+            <zeebe:property />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>Event_0cvabtc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0vkbt9s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_15msm2a</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1iqu722</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1gjkx3n</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1o56689</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Event_0cvabtc">
+      <bpmn:outgoing>Flow_06hhbnu</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Activity_0vkbt9s" name="Платёж сформирован">
+      <bpmn:incoming>Flow_06hhbnu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1hrxyvp</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_15msm2a" name="Рассчитать исх. остаток">
+      <bpmn:incoming>Flow_1hrxyvp</bpmn:incoming>
+      <bpmn:outgoing>Flow_16zh2ol</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Activity_1iqu722" name="Просмотр, выборка платежей">
+      <bpmn:incoming>Flow_16zh2ol</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ijp7qa</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="Event_1gjkx3n">
+      <bpmn:incoming>Flow_0s96iur</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Activity_1o56689" name="Позиции подготовлены">
+      <bpmn:incoming>Flow_1ijp7qa</bpmn:incoming>
+      <bpmn:outgoing>Flow_0s96iur</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_06hhbnu" sourceRef="Event_0cvabtc" targetRef="Activity_0vkbt9s" />
+    <bpmn:sequenceFlow id="Flow_1hrxyvp" sourceRef="Activity_0vkbt9s" targetRef="Activity_15msm2a" />
+    <bpmn:sequenceFlow id="Flow_16zh2ol" sourceRef="Activity_15msm2a" targetRef="Activity_1iqu722" />
+    <bpmn:sequenceFlow id="Flow_1ijp7qa" sourceRef="Activity_1iqu722" targetRef="Activity_1o56689" />
+    <bpmn:sequenceFlow id="Flow_0s96iur" sourceRef="Activity_1o56689" targetRef="Event_1gjkx3n" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0r20ghj">
+      <bpmndi:BPMNShape id="Participant_0tu3kfm_di" bpmnElement="Participant_0tu3kfm" isHorizontal="true">
+        <dc:Bounds x="142" y="80" width="958" height="290" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0h9s3rm_di" bpmnElement="Lane_0h9s3rm" isHorizontal="true">
+        <dc:Bounds x="172" y="80" width="928" height="290" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0cvabtc_di" bpmnElement="Event_0cvabtc">
+        <dc:Bounds x="222" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="205" y="715" width="71" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vkbt9s_di" bpmnElement="Activity_0vkbt9s">
+        <dc:Bounds x="280" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15msm2a_di" bpmnElement="Activity_15msm2a">
+        <dc:Bounds x="440" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1iqu722_di" bpmnElement="Activity_1iqu722">
+        <dc:Bounds x="610" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gjkx3n_di" bpmnElement="Event_1gjkx3n">
+        <dc:Bounds x="972" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1o56689_di" bpmnElement="Activity_1o56689">
+        <dc:Bounds x="790" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_06hhbnu_di" bpmnElement="Flow_06hhbnu">
+        <di:waypoint x="258" y="210" />
+        <di:waypoint x="280" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hrxyvp_di" bpmnElement="Flow_1hrxyvp">
+        <di:waypoint x="380" y="210" />
+        <di:waypoint x="440" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16zh2ol_di" bpmnElement="Flow_16zh2ol">
+        <di:waypoint x="540" y="210" />
+        <di:waypoint x="610" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ijp7qa_di" bpmnElement="Flow_1ijp7qa">
+        <di:waypoint x="710" y="210" />
+        <di:waypoint x="790" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s96iur_di" bpmnElement="Flow_0s96iur">
+        <di:waypoint x="890" y="210" />
+        <di:waypoint x="972" y="210" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

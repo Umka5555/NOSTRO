@@ -1,0 +1,37 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="thTWhImoSb7_HQ6arvKv" name="Страница-1">
+    <mxGraphModel dx="1123" dy="661" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-3" edge="1" parent="1" source="gcFJ-PCWsp2H1grvszEy-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="gcFJ-PCWsp2H1grvszEy-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;aspect=fixed;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="250" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-5" edge="1" parent="1" source="gcFJ-PCWsp2H1grvszEy-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="gcFJ-PCWsp2H1grvszEy-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="Позиция сформирована" vertex="1">
+          <mxGeometry height="60" width="120" x="220" y="171" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-7" edge="1" parent="1" source="gcFJ-PCWsp2H1grvszEy-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="gcFJ-PCWsp2H1grvszEy-6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="Позиция просмотрена" vertex="1">
+          <mxGeometry height="60" width="120" x="220" y="293" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-10" edge="1" parent="1" source="gcFJ-PCWsp2H1grvszEy-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;" target="gcFJ-PCWsp2H1grvszEy-9" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-6" parent="1" style="whiteSpace=wrap;html=1;rounded=1;roundedPerimeter=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Внесены изменения&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="220" y="414" as="geometry" />
+        </mxCell>
+        <mxCell id="gcFJ-PCWsp2H1grvszEy-9" parent="1" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#ff0000;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="265" y="550" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
