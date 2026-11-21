@@ -170,6 +170,102 @@
         .users-table th { background-color: #f0f6ff; color: #002b5c; padding: 8px; border: 1px solid #cce0ff; text-align: left; }
         .users-table td { padding: 8px; border: 1px solid #e0e0e0; }
 
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: flex-end;
+            background: #f7faff;
+            border: 1px solid #d6e4f5;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+        .filter-bar .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 150px;
+            flex: 1;
+        }
+        .filter-bar label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #002b5c;
+        }
+        .filter-bar input, .filter-bar select {
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #fff;
+        }
+        .filter-bar .filter-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .filter-bar button {
+            padding: 7px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-filter { background: #0056b3; color: #fff; }
+        .btn-filter:hover { background: #004494; }
+        .btn-clear { background: #e2e8f0; color: #333; }
+        .btn-clear:hover { background: #cbd5e1; }
+        .table-wrap { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+        .data-table th {
+            background-color: #f0f6ff;
+            color: #002b5c;
+            padding: 8px;
+            border: 1px solid #cce0ff;
+            text-align: left;
+            white-space: nowrap;
+        }
+        .data-table th.sortable { cursor: pointer; user-select: none; }
+        .data-table th.sortable:hover { background-color: #dcebff; }
+        .data-table td { padding: 7px 8px; border: 1px solid #e0e0e0; }
+        .data-table tbody tr:hover { background-color: #f8fbff; }
+        .btn-edit-row {
+            background: #ffc107;
+            color: #000;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .btn-edit-row:hover { background: #e0a800; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 20, 50, 0.45);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-box h3 { margin-top: 0; color: #002b5c; border-bottom: 2px solid #e6f0fa; padding-bottom: 8px; }
+
         .toast {
             visibility: hidden;
             min-width: 250px;
@@ -218,15 +314,15 @@
             <div class="card-grid" style="margin-top: 30px;">
                 <div class="card" style="text-align: center;">
                     <h2>Баланс НОСТРО</h2>
-                    <p style="font-size: 24px; color: #28a745; font-weight: bold;">1 250 000.00 RUB</p>
+                    <p id="dash-balance" style="font-size: 24px; color: #28a745; font-weight: bold;">1 250 000.00 RUB</p>
                 </div>
                 <div class="card" style="text-align: center;">
                     <h2>Активные позиции</h2>
-                    <p style="font-size: 24px; color: #0056b3; font-weight: bold;">14</p>
+                    <p id="dash-positions" style="font-size: 24px; color: #0056b3; font-weight: bold;">0</p>
                 </div>
                 <div class="card" style="text-align: center;">
                     <h2>Платежи в обработке</h2>
-                    <p style="font-size: 24px; color: #ffc107; font-weight: bold;">3</p>
+                    <p id="dash-payments" style="font-size: 24px; color: #ffc107; font-weight: bold;">0</p>
                 </div>
             </div>
         </div>
@@ -248,6 +344,7 @@
                     </div>
                     <div class="input-group"><label>Счёт Отправителя:</label><input type="text" id="pay-sender" placeholder="Номер счёта"></div>
                     <div class="input-group"><label>Счёт Получателя:</label><input type="text" id="pay-receiver" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Компания:</label><input type="text" id="pay-company" list="companies-datalist" placeholder="Наименование компании"></div>
                     <div class="button-group">
                         <button class="btn-reset" onclick="resetPaymentForm()">Очистить</button>
                         <button class="btn-ok" onclick="submitPayment()">Отправить</button>
@@ -269,6 +366,61 @@
                         <button class="btn-ok" onclick="applyStatus()">Применить</button>
                     </div>
                 </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>База платежей</h2>
+                    <div class="filter-bar">
+                        <div class="filter-field">
+                            <label>Фильтр по номеру счёта:</label>
+                            <input type="text" id="pay-filter-acc" placeholder="НОСТРО / отправитель / получатель">
+                        </div>
+                        <div class="filter-field">
+                            <label>Фильтр по компании:</label>
+                            <input type="text" id="pay-filter-company" placeholder="Название компании">
+                        </div>
+                        <div class="filter-field">
+                            <label>Сортировать по:</label>
+                            <select id="pay-sort-by">
+                                <option value="pay_date">Дате</option>
+                                <option value="amount">Сумме</option>
+                                <option value="nostro_account">Номеру счёта</option>
+                                <option value="company">Компании</option>
+                                <option value="status">Статусу</option>
+                                <option value="payment_code">ID платежа</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label>Порядок:</label>
+                            <select id="pay-sort-dir">
+                                <option value="DESC">По убыванию ↓</option>
+                                <option value="ASC">По возрастанию ↑</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="loadPaymentsTable()">Применить</button>
+                            <button class="btn-clear" onclick="resetFilter('pay', loadPaymentsTable)">Сбросить</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="payments-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="toggleSort('pay','payment_code',loadPaymentsTable)">ID</th>
+                                    <th class="sortable" onclick="toggleSort('pay','pay_date',loadPaymentsTable)">Дата</th>
+                                    <th class="sortable" onclick="toggleSort('pay','amount',loadPaymentsTable)">Сумма</th>
+                                    <th class="sortable" onclick="toggleSort('pay','currency',loadPaymentsTable)">Валюта</th>
+                                    <th class="sortable" onclick="toggleSort('pay','nostro_account',loadPaymentsTable)">Счёт НОСТРО</th>
+                                    <th>Отправитель</th>
+                                    <th>Получатель</th>
+                                    <th class="sortable" onclick="toggleSort('pay','company',loadPaymentsTable)">Компания</th>
+                                    <th class="sortable" onclick="toggleSort('pay','status',loadPaymentsTable)">Статус</th>
+                                    <th style="text-align:center;">Редактировать данные</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -287,8 +439,63 @@
                     <div class="input-group"><label>Статус:</label>
                         <select id="pos-status"><option value="Активна">Активна</option><option value="Закрыта">Закрыта</option></select>
                     </div>
+                    <div class="input-group"><label>Компания:</label><input type="text" id="pos-company" list="companies-datalist" placeholder="Наименование компании"></div>
                     <div class="button-group">
                         <button class="btn-ok" onclick="submitPosition()">Сохранить позицию</button>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>База позиций по счетам</h2>
+                    <div class="filter-bar">
+                        <div class="filter-field">
+                            <label>Фильтр по номеру счёта:</label>
+                            <input type="text" id="pos-filter-acc" placeholder="Номер счёта">
+                        </div>
+                        <div class="filter-field">
+                            <label>Фильтр по компании:</label>
+                            <input type="text" id="pos-filter-company" placeholder="Название компании">
+                        </div>
+                        <div class="filter-field">
+                            <label>Сортировать по:</label>
+                            <select id="pos-sort-by">
+                                <option value="pos_date">Дате</option>
+                                <option value="amount">Сумме</option>
+                                <option value="balance">Остатку</option>
+                                <option value="account_number">Номеру счёта</option>
+                                <option value="company">Компании</option>
+                                <option value="status">Статусу</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label>Порядок:</label>
+                            <select id="pos-sort-dir">
+                                <option value="DESC">По убыванию ↓</option>
+                                <option value="ASC">По возрастанию ↑</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="loadPositionsTable()">Применить</button>
+                            <button class="btn-clear" onclick="resetFilter('pos', loadPositionsTable)">Сбросить</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="positions-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="toggleSort('pos','position_code',loadPositionsTable)">ID</th>
+                                    <th class="sortable" onclick="toggleSort('pos','pos_date',loadPositionsTable)">Дата</th>
+                                    <th class="sortable" onclick="toggleSort('pos','account_number',loadPositionsTable)">Счёт НОСТРО</th>
+                                    <th class="sortable" onclick="toggleSort('pos','amount',loadPositionsTable)">Сумма</th>
+                                    <th class="sortable" onclick="toggleSort('pos','balance',loadPositionsTable)">Остаток</th>
+                                    <th class="sortable" onclick="toggleSort('pos','currency',loadPositionsTable)">Валюта</th>
+                                    <th class="sortable" onclick="toggleSort('pos','company',loadPositionsTable)">Компания</th>
+                                    <th class="sortable" onclick="toggleSort('pos','status',loadPositionsTable)">Статус</th>
+                                    <th style="text-align:center;">Редактировать данные</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -318,12 +525,62 @@
                     
                     <div class="input-group">
                         <label>Контрагент:</label>
-                        <input type="text" id="acc-owner" placeholder="Наименование">
+                        <input type="text" id="acc-owner" list="companies-datalist" placeholder="Наименование">
                     </div>
 
                     <div class="button-group">
                         <button class="btn-ok" onclick="confirmAccountBalance()">Подтвердить</button>
                         <button class="btn-reset" onclick="revertAccountBalance()">Вернуть</button>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>Справочник счетов НОСТРО</h2>
+                    <div class="filter-bar">
+                        <div class="filter-field">
+                            <label>Фильтр по номеру счёта:</label>
+                            <input type="text" id="acc-filter-acc" placeholder="Номер счёта">
+                        </div>
+                        <div class="filter-field">
+                            <label>Фильтр по компании:</label>
+                            <input type="text" id="acc-filter-company" placeholder="Владелец / компания">
+                        </div>
+                        <div class="filter-field">
+                            <label>Сортировать по:</label>
+                            <select id="acc-sort-by">
+                                <option value="account_number">Номеру счёта</option>
+                                <option value="owner_name">Компании</option>
+                                <option value="balance">Остатку</option>
+                                <option value="currency">Валюте</option>
+                                <option value="acc_date">Дате</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label>Порядок:</label>
+                            <select id="acc-sort-dir">
+                                <option value="ASC">По возрастанию ↑</option>
+                                <option value="DESC">По убыванию ↓</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="loadAccountsTable()">Применить</button>
+                            <button class="btn-clear" onclick="resetFilter('acc', loadAccountsTable)">Сбросить</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="accounts-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="toggleSort('acc','account_number',loadAccountsTable)">Номер счёта</th>
+                                    <th class="sortable" onclick="toggleSort('acc','acc_date',loadAccountsTable)">Дата</th>
+                                    <th class="sortable" onclick="toggleSort('acc','currency',loadAccountsTable)">Валюта</th>
+                                    <th class="sortable" onclick="toggleSort('acc','balance',loadAccountsTable)">Остаток</th>
+                                    <th class="sortable" onclick="toggleSort('acc','owner_name',loadAccountsTable)">Компания (владелец)</th>
+                                    <th style="text-align:center;">Редактировать данные</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -334,36 +591,177 @@
             <div class="card-grid">
                 <div class="card">
                     <h2>Сделка FX Deals</h2>
-                    <div class="input-group"><label>Номер:</label><input type="text" id="fx-number"></div>
-                    <div class="input-group"><label>Сумма:</label><input type="number" id="fx-sum"></div>
-                    <div class="input-group"><label>Контрагент:</label><input type="text" id="fx-contragent"></div>
-                    <button class="btn-ok" onclick="generatePaymentFromDeal('FX')">Создать платёж</button>
+                    <div class="input-group"><label>Номер:</label><input type="text" id="fx-number" placeholder="FX-2026-005"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="fx-sum" placeholder="0.00" step="0.01"></div>
+                    <div class="input-group"><label>Валюта:</label>
+                        <select id="fx-currency" onchange="convertDealCurrency('fx')">
+                            <option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="fx-nostro" placeholder="40702810000000000001"></div>
+                    <div class="input-group"><label>Контрагент (компания):</label><input type="text" id="fx-contragent" list="companies-datalist" placeholder="Наименование компании"></div>
+                    <button class="btn-ok" onclick="generatePaymentFromDeal('FX')">Сохранить сделку и создать платёж</button>
                 </div>
                 <div class="card">
                     <h2>Сделка MM Deals</h2>
-                    <div class="input-group"><label>Номер:</label><input type="text" id="mm-number"></div>
-                    <div class="input-group"><label>Сумма:</label><input type="number" id="mm-sum"></div>
-                    <div class="input-group"><label>Контрагент:</label><input type="text" id="mm-contragent"></div>
-                    <button class="btn-ok" onclick="generatePaymentFromDeal('MM')">Создать платёж</button>
+                    <div class="input-group"><label>Номер:</label><input type="text" id="mm-number" placeholder="MM-2026-005"></div>
+                    <div class="input-group"><label>Сумма:</label><input type="number" id="mm-sum" placeholder="0.00" step="0.01"></div>
+                    <div class="input-group"><label>Валюта:</label>
+                        <select id="mm-currency" onchange="convertDealCurrency('mm')">
+                            <option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="mm-nostro" placeholder="40702810000000000001"></div>
+                    <div class="input-group"><label>Контрагент (компания):</label><input type="text" id="mm-contragent" list="companies-datalist" placeholder="Наименование компании"></div>
+                    <button class="btn-ok" onclick="generatePaymentFromDeal('MM')">Сохранить сделку и создать платёж</button>
+                </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>База сделок</h2>
+                    <div class="filter-bar">
+                        <div class="filter-field">
+                            <label>Фильтр по номеру счёта:</label>
+                            <input type="text" id="deal-filter-acc" placeholder="НОСТРО / отправитель / получатель">
+                        </div>
+                        <div class="filter-field">
+                            <label>Фильтр по компании:</label>
+                            <input type="text" id="deal-filter-company" placeholder="Название компании">
+                        </div>
+                        <div class="filter-field">
+                            <label>Сортировать по:</label>
+                            <select id="deal-sort-by">
+                                <option value="deal_date">Дате</option>
+                                <option value="amount">Сумме</option>
+                                <option value="nostro_account">Номеру счёта</option>
+                                <option value="company">Компании</option>
+                                <option value="deal_type">Типу сделки</option>
+                                <option value="status">Статусу</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label>Порядок:</label>
+                            <select id="deal-sort-dir">
+                                <option value="DESC">По убыванию ↓</option>
+                                <option value="ASC">По возрастанию ↑</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="loadDealsTable()">Применить</button>
+                            <button class="btn-clear" onclick="resetFilter('deal', loadDealsTable)">Сбросить</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="deals-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="toggleSort('deal','deal_code',loadDealsTable)">ID сделки</th>
+                                    <th class="sortable" onclick="toggleSort('deal','deal_date',loadDealsTable)">Дата</th>
+                                    <th class="sortable" onclick="toggleSort('deal','deal_type',loadDealsTable)">Тип</th>
+                                    <th class="sortable" onclick="toggleSort('deal','amount',loadDealsTable)">Сумма</th>
+                                    <th class="sortable" onclick="toggleSort('deal','currency',loadDealsTable)">Валюта</th>
+                                    <th class="sortable" onclick="toggleSort('deal','nostro_account',loadDealsTable)">Счёт НОСТРО</th>
+                                    <th class="sortable" onclick="toggleSort('deal','company',loadDealsTable)">Компания</th>
+                                    <th class="sortable" onclick="toggleSort('deal','status',loadDealsTable)">Статус</th>
+                                    <th style="text-align:center;">Редактировать данные</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ВКЛАДКА: НСИ -->
+        <!-- ВКЛАДКА: НСИ И ОТЧЁТЫ -->
         <div id="tab-nsi" class="tab-content">
             <div class="card-grid">
                 <div class="card">
-                    <h2>НСИ Справочники</h2>
-                    <div class="input-group"><label>Код:</label><input type="text" id="nsi-code"></div>
-                    <div class="input-group"><label>Тип:</label><input type="text" id="nsi-type"></div>
-                    <button class="btn-ok" onclick="showToast('Данные получены!')">Найти</button>
+                    <h2>НСИ Справочники (Котировки валют)</h2>
+                    <div class="input-group"><label>Валюта:</label>
+                        <select id="nsi-curr-code" onchange="fillNsiCurrencyRate()">
+                            <option value="USD">USD (Доллар США)</option>
+                            <option value="EUR">EUR (Евро)</option>
+                            <option value="CNY">CNY (Китайский юань)</option>
+                            <option value="RUB">RUB (Российский рубль)</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><label>Курс к RUB:</label><input type="number" id="nsi-curr-rate" step="0.0001" placeholder="98.50"></div>
+                    <div class="input-group"><label>Дата курса:</label><input type="date" id="nsi-curr-date"></div>
+                    <button class="btn-ok" onclick="saveCurrencyRate()">Сохранить котировку</button>
+                    <table class="data-table" id="currencies-table" style="margin-top:12px;">
+                        <thead>
+                            <tr><th>Валюта</th><th>Курс к RUB</th><th>Дата</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
                 <div class="card">
                     <h2>НСИ Отчёты</h2>
                     <div class="input-group"><label>Тип отчёта:</label>
-                        <select id="report-type"><option>Тикет сделки</option><option>Список сделок</option></select>
+                        <select id="report-type" onchange="loadReportsTable()">
+                            <option value="Список сделок">Список сделок</option>
+                            <option value="Тикет сделки">Тикет сделки</option>
+                            <option value="Реестр платежей">Реестр платежей</option>
+                            <option value="Позиции по счетам">Позиции по счетам</option>
+                        </select>
                     </div>
-                    <button class="btn-ok" onclick="showToast('Отчёт сформирован!')">Выгрузить</button>
+                    <div class="button-group">
+                        <button class="btn-ok" onclick="loadReportsTable()">Сформировать</button>
+                        <button class="btn-reset" onclick="exportReportCsv()">Выгрузить CSV</button>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>Отчёт из базы данных</h2>
+                    <div class="filter-bar">
+                        <div class="filter-field">
+                            <label>Фильтр по номеру счёта:</label>
+                            <input type="text" id="rep-filter-acc" placeholder="Номер счёта">
+                        </div>
+                        <div class="filter-field">
+                            <label>Фильтр по компании:</label>
+                            <input type="text" id="rep-filter-company" placeholder="Название компании">
+                        </div>
+                        <div class="filter-field">
+                            <label>Сортировать по:</label>
+                            <select id="rep-sort-by">
+                                <option value="rep_date">Дате</option>
+                                <option value="amount">Сумме</option>
+                                <option value="account">Номеру счёта</option>
+                                <option value="company">Компании</option>
+                                <option value="status">Статусу</option>
+                                <option value="code">Коду</option>
+                            </select>
+                        </div>
+                        <div class="filter-field">
+                            <label>Порядок:</label>
+                            <select id="rep-sort-dir">
+                                <option value="DESC">По убыванию ↓</option>
+                                <option value="ASC">По возрастанию ↑</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-filter" onclick="loadReportsTable()">Применить</button>
+                            <button class="btn-clear" onclick="resetFilter('rep', loadReportsTable)">Сбросить</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="reports-table">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="toggleSort('rep','code',loadReportsTable)">Код</th>
+                                    <th class="sortable" onclick="toggleSort('rep','rep_date',loadReportsTable)">Дата</th>
+                                    <th>Категория</th>
+                                    <th class="sortable" onclick="toggleSort('rep','account',loadReportsTable)">Счёт НОСТРО</th>
+                                    <th class="sortable" onclick="toggleSort('rep','company',loadReportsTable)">Компания</th>
+                                    <th class="sortable" onclick="toggleSort('rep','amount',loadReportsTable)">Сумма</th>
+                                    <th>Валюта</th>
+                                    <th class="sortable" onclick="toggleSort('rep','status',loadReportsTable)">Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -403,6 +801,20 @@
         </div>
     </div>
 
+    <datalist id="companies-datalist"></datalist>
+
+    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ЗАПИСИ -->
+    <div id="edit-row-modal" class="modal-overlay" onclick="if(event.target===this) closeEditModal()">
+        <div class="modal-box">
+            <h3 id="edit-modal-title">Редактировать запись</h3>
+            <div id="edit-modal-fields"></div>
+            <div class="button-group" style="margin-top:16px;">
+                <button class="btn-reset" onclick="closeEditModal()">Отмена</button>
+                <button class="btn-ok" onclick="saveEditModal()">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== АВТОРИЗАЦИЯ И РОЛИ ==========
         let auth = null;
@@ -428,6 +840,10 @@
                 } else {
                     document.querySelector('.admin-only').style.display = 'none';
                 }
+
+                loadDashboardStats();
+                loadCurrencies();
+                loadCompanies();
             });
         }
 
@@ -436,12 +852,87 @@
             window.location.href = '1Login.html';
         }
 
+        // ========== API HELPER ==========
+        async function apiRequest(action, method = 'GET', body = null, queryParams = '') {
+            const opts = { method, headers: {} };
+            if (body !== null) {
+                opts.headers['Content-Type'] = 'application/json';
+                opts.body = JSON.stringify(body);
+            }
+            const url = 'api.php?action=' + encodeURIComponent(action) + (queryParams ? '&' + queryParams : '');
+            const res = await fetch(url, opts);
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                throw new Error(data.error || 'Ошибка сервера');
+            }
+            return data;
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const data = await apiRequest('dashboard_stats');
+                const balEl = document.getElementById('dash-balance');
+                const posEl = document.getElementById('dash-positions');
+                const payEl = document.getElementById('dash-payments');
+                if (balEl) balEl.textContent = Number(data.total_balance).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' RUB';
+                if (posEl) posEl.textContent = data.active_positions;
+                if (payEl) payEl.textContent = data.pending_payments;
+            } catch (e) {
+                console.warn('Не удалось загрузить статистику:', e.message);
+            }
+        }
+
         // ========== ЛОГИКА ВКЛАДОК ==========
         function openTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.menu-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
+            if (tabId === 'tab-dashboard') loadDashboardStats();
+            if (tabId === 'tab-payments') loadPaymentsTable();
+            if (tabId === 'tab-positions') loadPositionsTable();
+            if (tabId === 'tab-accounts') loadAccountsTable();
+            if (tabId === 'tab-deals') loadDealsTable();
+            if (tabId === 'tab-nsi') { loadCurrencies(); loadReportsTable(); }
+        }
+
+        // ========== ФИЛЬТРАЦИЯ И СОРТИРОВКА ==========
+        function buildQueryParams(prefix) {
+            const acc = (document.getElementById(prefix + '-filter-acc')?.value || '').trim();
+            const company = (document.getElementById(prefix + '-filter-company')?.value || '').trim();
+            const sortBy = document.getElementById(prefix + '-sort-by')?.value || '';
+            const sortDir = document.getElementById(prefix + '-sort-dir')?.value || 'DESC';
+            const qs = new URLSearchParams();
+            if (acc) qs.set('account', acc);
+            if (company) qs.set('company', company);
+            if (sortBy) qs.set('sort_by', sortBy);
+            if (sortDir) qs.set('sort_dir', sortDir);
+            return qs.toString();
+        }
+
+        function toggleSort(prefix, column, loaderFn) {
+            const byEl = document.getElementById(prefix + '-sort-by');
+            const dirEl = document.getElementById(prefix + '-sort-dir');
+            if (!byEl || !dirEl) return;
+            if (byEl.value === column) {
+                dirEl.value = dirEl.value === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+                byEl.value = column;
+                dirEl.value = 'ASC';
+            }
+            loaderFn();
+        }
+
+        function resetFilter(prefix, loaderFn) {
+            const accEl = document.getElementById(prefix + '-filter-acc');
+            const compEl = document.getElementById(prefix + '-filter-company');
+            if (accEl) accEl.value = '';
+            if (compEl) compEl.value = '';
+            loaderFn();
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
         }
 
         // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
@@ -453,187 +944,662 @@
         }
 
         // ========== ПЛАТЕЖИ ==========
-        function submitPayment() {
+        let cachedPayments = [];
+        async function loadPaymentsTable() {
+            const tbody = document.querySelector('#payments-table tbody');
+            if (!tbody) return;
+            try {
+                const qs = buildQueryParams('pay');
+                const data = await apiRequest('payments_list', 'GET', null, qs);
+                cachedPayments = data.payments || [];
+                tbody.innerHTML = cachedPayments.length ? cachedPayments.map((r, idx) => `
+                    <tr>
+                        <td>${escapeHtml(r.payment_code)}</td>
+                        <td>${escapeHtml(r.pay_date)}</td>
+                        <td><b>${formatMoney(r.amount)}</b></td>
+                        <td>${escapeHtml(r.currency)}</td>
+                        <td>${escapeHtml(r.nostro_account)}</td>
+                        <td>${escapeHtml(r.sender_account)}</td>
+                        <td>${escapeHtml(r.receiver_account)}</td>
+                        <td>${escapeHtml(r.company)}</td>
+                        <td>${escapeHtml(r.status)}</td>
+                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('payment', ${idx})">✏️ Редактировать</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="10" style="text-align:center;color:#777;">Нет данных по заданному фильтру</td></tr>';
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        async function submitPayment() {
             const id = document.getElementById('pay-id').value.trim();
             const sum = document.getElementById('pay-sum').value.trim();
             if (!id || !sum) { showToast('Заполните ID и Сумму!', true); return; }
-            showToast('Платёж отправлен!');
-            document.getElementById('pay-status-badge').textContent = 'Отправлен';
-            document.getElementById('pay-status-badge').className = 'status-badge status-otpravlen';
+
+            try {
+                await apiRequest('payment_save', 'POST', {
+                    payment_code: id,
+                    pay_date: document.getElementById('pay-date').value,
+                    amount: parseFloat(sum),
+                    nostro_account: document.getElementById('pay-nostro').value.trim(),
+                    direction: document.getElementById('pay-direction').value,
+                    currency: document.getElementById('pay-currency').value,
+                    sender_account: document.getElementById('pay-sender').value.trim(),
+                    receiver_account: document.getElementById('pay-receiver').value.trim(),
+                    company: document.getElementById('pay-company').value.trim(),
+                    status: 'Отправлен'
+                });
+                showToast('Платёж отправлен и сохранён в БД!');
+                document.getElementById('pay-status-badge').textContent = 'Отправлен';
+                document.getElementById('pay-status-badge').className = 'status-badge status-otpravlen';
+                loadPaymentsTable();
+                loadDashboardStats();
+                loadCompanies();
+            } catch (e) {
+                showToast(e.message, true);
+            }
         }
+
         function resetPaymentForm() {
-            document.querySelectorAll('#tab-payments input').forEach(el => el.value = '');
+            document.querySelectorAll('#tab-payments .card:not(:last-child) input').forEach(el => el.value = '');
             document.getElementById('pay-status-badge').textContent = 'Сформирован';
             document.getElementById('pay-status-badge').className = 'status-badge status-sformirovan';
         }
-        function applyStatus() {
+
+        async function applyStatus() {
             const status = document.getElementById('status-select').value;
+            const statusText = status.charAt(0).toUpperCase() + status.slice(1);
             const badge = document.getElementById('pay-status-badge');
             const statusMap = { 'сформирован': 'status-sformirovan', 'отправлен': 'status-otpravlen', 'изменён': 'status-izmenen', 'исправлен': 'status-ispravlen' };
-            badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            const payCode = document.getElementById('pay-id').value.trim();
+
+            if (payCode) {
+                try {
+                    await apiRequest('payment_status', 'POST', { payment_code: payCode, status: statusText });
+                    loadPaymentsTable();
+                    loadDashboardStats();
+                } catch (e) {
+                    showToast(e.message, true);
+                    return;
+                }
+            }
+
+            badge.textContent = statusText;
             badge.className = 'status-badge ' + statusMap[status];
             showToast('Статус изменён!');
         }
 
-        // ========== ДЕЙСТВИЯ ИЗ ДРУГИХ ВКЛАДОК ==========
-        function generatePaymentFromDeal(type) {
-            showToast('Платёж сформирован из сделки ' + type + '! Перейдите во вкладку Платежи.');
-            document.getElementById('pay-id').value = 'PAY-' + type + '-' + Date.now().toString().slice(-6);
+        // ========== СДЕЛКИ И ПОЗИЦИИ ==========
+        let cachedDeals = [];
+        async function loadDealsTable() {
+            const tbody = document.querySelector('#deals-table tbody');
+            if (!tbody) return;
+            try {
+                const qs = buildQueryParams('deal');
+                const data = await apiRequest('deals_list', 'GET', null, qs);
+                cachedDeals = data.deals || [];
+                tbody.innerHTML = cachedDeals.length ? cachedDeals.map((r, idx) => `
+                    <tr>
+                        <td>${escapeHtml(r.deal_code)}</td>
+                        <td>${escapeHtml(r.deal_date)}</td>
+                        <td>${escapeHtml(r.deal_type)}</td>
+                        <td><b>${formatMoney(r.amount)}</b></td>
+                        <td>${escapeHtml(r.currency)}</td>
+                        <td>${escapeHtml(r.nostro_account)}</td>
+                        <td>${escapeHtml(r.company)}</td>
+                        <td>${escapeHtml(r.status)}</td>
+                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('deal', ${idx})">✏️ Редактировать</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="9" style="text-align:center;color:#777;">Нет сделок по заданному фильтру</td></tr>';
+            } catch (e) {
+                showToast(e.message, true);
+            }
         }
-        function submitPosition() { showToast('Позиция сохранена!'); }
-        function updateAccountBalance() { showToast('Остаток обновлён!'); }
 
-                // ========== СЧЕТА НОСТРО (УПРАВЛЕНИЕ ОСТАТКОМ) ==========
-        
-        // Переменная для хранения предыдущего значения (история)
-        let previousBalanceValue = "0.00";
+        const dealPrevCurrency = { fx: 'RUB', mm: 'RUB' };
+        function convertDealCurrency(prefix) {
+            const currEl = document.getElementById(prefix + '-currency');
+            const sumEl = document.getElementById(prefix + '-sum');
+            if (!currEl || !sumEl) return;
+            const newCurr = currEl.value;
+            const oldCurr = dealPrevCurrency[prefix] || 'RUB';
+            if (newCurr === oldCurr) return;
 
-        // 1. Загрузка счета (имитация получения данных из БД)
+            if (sumEl.value !== '') {
+                const val = parseFloat(sumEl.value);
+                if (!isNaN(val)) {
+                    const oldRate = currencyRates[oldCurr] || 1;
+                    const newRate = currencyRates[newCurr] || 1;
+                    sumEl.value = ((val * oldRate) / newRate).toFixed(2);
+                    showToast(`Сумма сделки пересчитана по котировке НСИ (${oldCurr} → ${newCurr})`);
+                }
+            }
+            dealPrevCurrency[prefix] = newCurr;
+        }
+
+        async function generatePaymentFromDeal(type) {
+            const prefix = type.toLowerCase();
+            const dealCode = document.getElementById(prefix + '-number').value.trim() || (type + '-2026-' + Date.now().toString().slice(-4));
+            const amount = parseFloat(document.getElementById(prefix + '-sum').value || '0');
+            const currency = document.getElementById(prefix + '-currency')?.value || 'RUB';
+            const nostro = document.getElementById(prefix + '-nostro').value.trim();
+            const company = document.getElementById(prefix + '-contragent').value.trim();
+
+            if (amount > 0) {
+                try {
+                    await apiRequest('deal_save', 'POST', {
+                        deal_code: dealCode,
+                        amount: amount,
+                        currency: currency,
+                        nostro_account: nostro,
+                        deal_type: type + ' Deals',
+                        company: company,
+                        status: 'Активна'
+                    });
+                    loadDealsTable();
+                    loadCompanies();
+                } catch (e) {
+                    showToast(e.message, true);
+                    return;
+                }
+            }
+
+            document.getElementById('pay-id').value = 'PAY-' + dealCode;
+            if (amount > 0) document.getElementById('pay-sum').value = amount;
+            if (document.getElementById('pay-currency')) document.getElementById('pay-currency').value = currency;
+            if (nostro) document.getElementById('pay-nostro').value = nostro;
+            if (company) document.getElementById('pay-company').value = company;
+            showToast('Сделка сохранена! Платёж сформирован — перейдите во вкладку Платежи.');
+        }
+
+        let cachedPositions = [];
+        async function loadPositionsTable() {
+            const tbody = document.querySelector('#positions-table tbody');
+            if (!tbody) return;
+            try {
+                const qs = buildQueryParams('pos');
+                const data = await apiRequest('positions_list', 'GET', null, qs);
+                cachedPositions = data.positions || [];
+                tbody.innerHTML = cachedPositions.length ? cachedPositions.map((r, idx) => `
+                    <tr>
+                        <td>${escapeHtml(r.position_code)}</td>
+                        <td>${escapeHtml(r.pos_date)}</td>
+                        <td>${escapeHtml(r.account_number)}</td>
+                        <td>${formatMoney(r.amount)}</td>
+                        <td><b>${formatMoney(r.balance)}</b></td>
+                        <td>${escapeHtml(r.currency)}</td>
+                        <td>${escapeHtml(r.company)}</td>
+                        <td>${escapeHtml(r.status)}</td>
+                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('position', ${idx})">✏️ Редактировать</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="9" style="text-align:center;color:#777;">Нет позиций по заданному фильтру</td></tr>';
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        async function submitPosition() {
+            const acc = document.getElementById('pos-nostro').value.trim();
+            if (!acc) { showToast('Укажите счёт НОСТРО!', true); return; }
+            try {
+                await apiRequest('position_save', 'POST', {
+                    account_number: acc,
+                    pos_date: document.getElementById('pos-date').value,
+                    amount: document.getElementById('pos-sum').value || 0,
+                    balance: document.getElementById('pos-balance').value || 0,
+                    currency: document.getElementById('pos-currency').value,
+                    status: document.getElementById('pos-status').value,
+                    company: document.getElementById('pos-company').value.trim()
+                });
+                showToast('Позиция сохранена в БД!');
+                loadPositionsTable();
+                loadDashboardStats();
+                loadCompanies();
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        // ========== ОТЧЁТЫ ==========
+        let lastReportRows = [];
+        async function loadReportsTable() {
+            const tbody = document.querySelector('#reports-table tbody');
+            if (!tbody) return;
+            try {
+                const reportType = document.getElementById('report-type')?.value || 'Список сделок';
+                const qs = buildQueryParams('rep');
+                const data = await apiRequest('reports_list', 'GET', null, 'report_type=' + encodeURIComponent(reportType) + (qs ? '&' + qs : ''));
+                lastReportRows = data.rows || [];
+                tbody.innerHTML = lastReportRows.length ? lastReportRows.map(r => `
+                    <tr>
+                        <td>${escapeHtml(r.code)}</td>
+                        <td>${escapeHtml(r.rep_date)}</td>
+                        <td>${escapeHtml(r.category)}</td>
+                        <td>${escapeHtml(r.account)}</td>
+                        <td>${escapeHtml(r.company)}</td>
+                        <td><b>${formatMoney(r.amount)}</b></td>
+                        <td>${escapeHtml(r.currency)}</td>
+                        <td>${escapeHtml(r.status)}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="8" style="text-align:center;color:#777;">Нет данных для отчёта</td></tr>';
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        function exportReportCsv() {
+            if (!lastReportRows.length) { showToast('Сначала сформируйте непустой отчёт', true); return; }
+            const header = ['Код', 'Дата', 'Категория', 'Счёт НОСТРО', 'Компания', 'Сумма', 'Валюта', 'Статус'];
+            const lines = [header.join(';')].concat(lastReportRows.map(r =>
+                [r.code, r.rep_date, r.category, r.account, r.company, r.amount, r.currency, r.status]
+                    .map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')
+            ));
+            const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'nostro_report.csv';
+            link.click();
+            showToast('Отчёт выгружен в CSV!');
+        }
+
+        // ========== СЧЕТА НОСТРО (УПРАВЛЕНИЕ ОСТАТКОМ) ==========
+        let cachedAccounts = [];
+        async function loadAccountsTable() {
+            const tbody = document.querySelector('#accounts-table tbody');
+            if (!tbody) return;
+            try {
+                const qs = buildQueryParams('acc');
+                const data = await apiRequest('accounts_list', 'GET', null, qs);
+                cachedAccounts = data.accounts || [];
+                tbody.innerHTML = cachedAccounts.length ? cachedAccounts.map((r, idx) => `
+                    <tr style="cursor:pointer;" onclick="selectAccount('${escapeHtml(r.account_number)}')">
+                        <td><b>${escapeHtml(r.account_number)}</b></td>
+                        <td>${escapeHtml(r.acc_date)}</td>
+                        <td>${escapeHtml(r.currency)}</td>
+                        <td><b>${formatMoney(r.balance)}</b></td>
+                        <td>${escapeHtml(r.owner_name)}</td>
+                        <td style="text-align:center;" onclick="event.stopPropagation();"><button class="btn-edit-row" onclick="openEditModal('account', ${idx})">✏️ Редактировать</button></td>
+                    </tr>
+                `).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">Нет счетов по заданному фильтру</td></tr>';
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        async function loadCompanies() {
+            try {
+                const data = await apiRequest('companies_list');
+                const dl = document.getElementById('companies-datalist');
+                if (!dl) return;
+                dl.innerHTML = (data.companies || []).map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+            } catch (e) {
+                console.warn('Не удалось загрузить список компаний:', e.message);
+            }
+        }
+
+        // ========== КОТИРОВКИ ВАЛЮТ (НСИ) ==========
+        let currencyRates = { RUB: 1, USD: 98.5, EUR: 105.2, CNY: 13.6 };
+        let cachedCurrencies = [];
+
+        async function loadCurrencies() {
+            try {
+                const data = await apiRequest('currencies_list');
+                cachedCurrencies = data.currencies || [];
+                cachedCurrencies.forEach(c => {
+                    currencyRates[c.code] = parseFloat(c.rate_to_rub) || 1;
+                });
+                const tbody = document.querySelector('#currencies-table tbody');
+                if (tbody) {
+                    tbody.innerHTML = cachedCurrencies.map(c => `
+                        <tr style="cursor:pointer;" onclick="selectNsiCurrency('${escapeHtml(c.code)}')">
+                            <td><b>${escapeHtml(c.code)}</b></td>
+                            <td>${Number(c.rate_to_rub).toFixed(4)}</td>
+                            <td>${escapeHtml(c.rate_date)}</td>
+                        </tr>
+                    `).join('');
+                }
+                fillNsiCurrencyRate();
+            } catch (e) {
+                console.warn('Не удалось загрузить котировки:', e.message);
+            }
+        }
+
+        function selectNsiCurrency(code) {
+            const sel = document.getElementById('nsi-curr-code');
+            if (sel) {
+                sel.value = code;
+                fillNsiCurrencyRate();
+            }
+        }
+
+        function fillNsiCurrencyRate() {
+            const code = document.getElementById('nsi-curr-code')?.value;
+            const rateEl = document.getElementById('nsi-curr-rate');
+            const dateEl = document.getElementById('nsi-curr-date');
+            if (!code || !rateEl) return;
+            const found = cachedCurrencies.find(c => c.code === code);
+            rateEl.value = found ? found.rate_to_rub : (currencyRates[code] ?? 1);
+            if (dateEl) dateEl.value = found ? found.rate_date : new Date().toISOString().slice(0, 10);
+        }
+
+        async function saveCurrencyRate() {
+            const code = document.getElementById('nsi-curr-code').value;
+            const rate = parseFloat(document.getElementById('nsi-curr-rate').value || '0');
+            const rateDate = document.getElementById('nsi-curr-date').value;
+            if (!rate || rate <= 0) { showToast('Введите корректный курс больше 0!', true); return; }
+            try {
+                const res = await apiRequest('currency_save', 'POST', { code, rate_to_rub: rate, rate_date: rateDate });
+                await loadCurrencies();
+                loadDashboardStats();
+                showToast(res.message || 'Котировка сохранена!');
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        // ========== МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ==========
+        let editContext = null;
+
+        function fieldHtml(id, label, value, type = 'text', options = null, onChangeAttr = '') {
+            if (options) {
+                const opts = options.map(o => `<option value="${escapeHtml(o)}" ${o === value ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
+                return `<div class="input-group"><label>${label}:</label><select id="${id}" ${onChangeAttr}>${opts}</select></div>`;
+            }
+            const listAttr = id === 'ed-company' ? 'list="companies-datalist"' : '';
+            return `<div class="input-group"><label>${label}:</label><input type="${type}" id="${id}" ${listAttr} value="${escapeHtml(value ?? '')}" ${type === 'number' ? 'step="0.01"' : ''}></div>`;
+        }
+
+        function convertModalCurrency() {
+            if (!editContext) return;
+            const newCurr = document.getElementById('ed-currency')?.value;
+            const oldCurr = editContext.currency || 'RUB';
+            if (!newCurr || newCurr === oldCurr) return;
+
+            const oldRate = currencyRates[oldCurr] || 1;
+            const newRate = currencyRates[newCurr] || 1;
+
+            const amountEl = document.getElementById('ed-amount');
+            if (amountEl && amountEl.value !== '') {
+                const val = parseFloat(amountEl.value);
+                if (!isNaN(val)) {
+                    amountEl.value = ((val * oldRate) / newRate).toFixed(2);
+                }
+            }
+
+            const balanceEl = document.getElementById('ed-balance');
+            if (balanceEl && balanceEl.value !== '') {
+                const val = parseFloat(balanceEl.value);
+                if (!isNaN(val)) {
+                    balanceEl.value = ((val * oldRate) / newRate).toFixed(2);
+                }
+            }
+
+            editContext.currency = newCurr;
+            showToast(`Сумма пересчитана по котировке НСИ (${oldCurr} → ${newCurr})`);
+        }
+
+        function openEditModal(kind, index) {
+            const fieldsEl = document.getElementById('edit-modal-fields');
+            const titleEl = document.getElementById('edit-modal-title');
+            editContext = { kind, index };
+
+            if (kind === 'payment') {
+                const r = cachedPayments[index];
+                editContext.id = r.id;
+                editContext.currency = r.currency || 'RUB';
+                titleEl.textContent = 'Редактировать платёж ' + r.payment_code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-code', 'ID платежа', r.payment_code) +
+                    fieldHtml('ed-date', 'Дата', r.pay_date, 'date') +
+                    fieldHtml('ed-amount', 'Сумма', r.amount, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.nostro_account) +
+                    fieldHtml('ed-sender', 'Счёт отправителя', r.sender_account) +
+                    fieldHtml('ed-receiver', 'Счёт получателя', r.receiver_account) +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Сформирован', 'Отправлен', 'Изменён', 'Исправлен']);
+            } else if (kind === 'position') {
+                const r = cachedPositions[index];
+                editContext.id = r.id;
+                editContext.currency = r.currency || 'RUB';
+                titleEl.textContent = 'Редактировать позицию ' + r.position_code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-date', 'Дата', r.pos_date, 'date') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.account_number) +
+                    fieldHtml('ed-amount', 'Сумма', r.amount, 'number') +
+                    fieldHtml('ed-balance', 'Остаток', r.balance, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Активна', 'Закрыта']);
+            } else if (kind === 'deal') {
+                const r = cachedDeals[index];
+                editContext.id = r.id;
+                editContext.currency = r.currency || 'RUB';
+                titleEl.textContent = 'Редактировать сделку ' + r.deal_code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-code', 'ID сделки', r.deal_code) +
+                    fieldHtml('ed-type', 'Тип сделки', r.deal_type, 'select', ['FX Deals', 'MM Deals']) +
+                    fieldHtml('ed-amount', 'Сумма', r.amount, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.nostro_account) +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Активна', 'Исполнена', 'На проверке', 'Закрыта']);
+            } else if (kind === 'account') {
+                const r = cachedAccounts[index];
+                editContext.account_number = r.account_number;
+                editContext.currency = r.currency || 'RUB';
+                titleEl.textContent = 'Редактировать счёт ' + r.account_number;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-balance', 'Остаток', r.balance, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-company', 'Компания (владелец)', r.owner_name);
+            }
+
+            document.getElementById('edit-row-modal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-row-modal').classList.remove('show');
+            editContext = null;
+        }
+
+        async function saveEditModal() {
+            if (!editContext) return;
+            try {
+                if (editContext.kind === 'payment') {
+                    await apiRequest('payment_save', 'POST', {
+                        id: editContext.id,
+                        payment_code: document.getElementById('ed-code').value.trim(),
+                        pay_date: document.getElementById('ed-date').value,
+                        amount: parseFloat(document.getElementById('ed-amount').value || '0'),
+                        currency: document.getElementById('ed-currency').value,
+                        nostro_account: document.getElementById('ed-nostro').value.trim(),
+                        sender_account: document.getElementById('ed-sender').value.trim(),
+                        receiver_account: document.getElementById('ed-receiver').value.trim(),
+                        company: document.getElementById('ed-company').value.trim(),
+                        status: document.getElementById('ed-status').value
+                    });
+                    loadPaymentsTable();
+                } else if (editContext.kind === 'position') {
+                    await apiRequest('position_save', 'POST', {
+                        id: editContext.id,
+                        pos_date: document.getElementById('ed-date').value,
+                        account_number: document.getElementById('ed-nostro').value.trim(),
+                        amount: parseFloat(document.getElementById('ed-amount').value || '0'),
+                        balance: parseFloat(document.getElementById('ed-balance').value || '0'),
+                        currency: document.getElementById('ed-currency').value,
+                        company: document.getElementById('ed-company').value.trim(),
+                        status: document.getElementById('ed-status').value
+                    });
+                    loadPositionsTable();
+                } else if (editContext.kind === 'deal') {
+                    await apiRequest('deal_save', 'POST', {
+                        id: editContext.id,
+                        deal_code: document.getElementById('ed-code').value.trim(),
+                        deal_type: document.getElementById('ed-type').value,
+                        amount: parseFloat(document.getElementById('ed-amount').value || '0'),
+                        currency: document.getElementById('ed-currency').value,
+                        nostro_account: document.getElementById('ed-nostro').value.trim(),
+                        company: document.getElementById('ed-company').value.trim(),
+                        status: document.getElementById('ed-status').value
+                    });
+                    loadDealsTable();
+                    loadCompanies();
+                } else if (editContext.kind === 'account') {
+                    await apiRequest('account_update', 'POST', {
+                        account_number: editContext.account_number,
+                        balance: parseFloat(document.getElementById('ed-balance').value || '0'),
+                        currency: document.getElementById('ed-currency').value,
+                        owner_name: document.getElementById('ed-company').value.trim()
+                    });
+                    loadAccountsTable();
+                }
+                closeEditModal();
+                loadDashboardStats();
+                loadCompanies();
+                showToast('Данные успешно обновлены в БД!');
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        function selectAccount(accNum) {
+            document.getElementById('acc-number').value = accNum;
+            loadAccountBalance();
+        }
+
+        // ========== СЧЕТА НОСТРО (УПРАВЛЕНИЕ ОСТАТКОМ) ==========
+        function formatMoney(val) {
+            return Number(val || 0).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        let accountLookupTimer = null;
         function loadAccountBalance() {
+            clearTimeout(accountLookupTimer);
             const accNumber = document.getElementById('acc-number').value.trim();
-            
-            // В реальной БД здесь будет fetch() к PHP скрипту.
-            // Пока используем заглушку для теста:
-            if (accNumber !== "") {
-                // Подставляем "текущее" значение из базы
-                const dbValue = "1 250 000.00"; 
-                document.getElementById('acc-current-balance').value = dbValue;
-                document.getElementById('acc-owner').value = "ОАО 'Пример'";
-                
-                // Запоминаем это значение как предыдущее
-                previousBalanceValue = dbValue;
-                
-                // Очищаем поле нового остатка
-                document.getElementById('acc-new-balance').value = '';
-            } else {
+            if (!accNumber) {
                 document.getElementById('acc-current-balance').value = "0.00";
                 document.getElementById('acc-owner').value = "";
-                previousBalanceValue = "0.00";
+                return;
             }
+            accountLookupTimer = setTimeout(async () => {
+                try {
+                    const data = await apiRequest('account_get', 'GET', null, 'account_number=' + encodeURIComponent(accNumber));
+                    if (data.account) {
+                        document.getElementById('acc-current-balance').value = formatMoney(data.account.balance);
+                        document.getElementById('acc-owner').value = data.account.owner_name || '';
+                    } else {
+                        document.getElementById('acc-current-balance').value = "0.00";
+                        document.getElementById('acc-owner').value = "";
+                    }
+                } catch (e) {
+                    showToast(e.message, true);
+                }
+            }, 250);
         }
 
-        // 2. Подтверждение (Текущее = Новое)
-        function confirmAccountBalance() {
+        async function confirmAccountBalance() {
             const accNumber = document.getElementById('acc-number').value.trim();
             const newBalanceInput = document.getElementById('acc-new-balance').value.trim();
+            const ownerName = document.getElementById('acc-owner').value.trim();
 
-            if (!accNumber) {
-                showToast('Введите номер счёта!', true); return;
+            if (!accNumber) { showToast('Введите номер счёта!', true); return; }
+            if (newBalanceInput === '') { showToast('Введите новый остаток!', true); return; }
+
+            try {
+                const data = await apiRequest('account_update', 'POST', {
+                    account_number: accNumber,
+                    balance: parseFloat(newBalanceInput),
+                    owner_name: ownerName
+                });
+                document.getElementById('acc-current-balance').value = formatMoney(data.account.balance);
+                document.getElementById('acc-new-balance').value = '';
+                showToast('Остаток успешно обновлён в БД!');
+                loadAccountsTable();
+                loadDashboardStats();
+                loadCompanies();
+            } catch (e) {
+                showToast(e.message, true);
             }
-            if (newBalanceInput === '') {
-                showToast('Введите новый остаток!', true); return;
-            }
-
-            // Запоминаем текущее значение (до изменения) в переменную для кнопки "Вернуть"
-            const currentBalanceElement = document.getElementById('acc-current-balance');
-            previousBalanceValue = currentBalanceElement.value;
-
-            // Форматируем новое значение (например, 1250000 -> 1 250 000.00)
-            const numValue = parseFloat(newBalanceInput);
-            const formattedNewValue = numValue.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            // Заменяем текущее на новое
-            currentBalanceElement.value = formattedNewValue;
-            
-            // Очищаем поле ввода
-            document.getElementById('acc-new-balance').value = '';
-            
-            showToast('Остаток успешно обновлён!');
         }
 
-        // 3. Вернуть (Возврат к предыдущему значению)
-        function revertAccountBalance() {
-            const currentBalanceElement = document.getElementById('acc-current-balance');
-            
-            // Если предыдущее значение отличается от текущего, значит мы можем сделать откат
-            if (previousBalanceValue !== currentBalanceElement.value) {
-                currentBalanceElement.value = previousBalanceValue;
+        async function revertAccountBalance() {
+            const accNumber = document.getElementById('acc-number').value.trim();
+            if (!accNumber) { showToast('Введите номер счёта!', true); return; }
+
+            try {
+                const data = await apiRequest('account_revert', 'POST', { account_number: accNumber });
+                document.getElementById('acc-current-balance').value = formatMoney(data.account.balance);
+                document.getElementById('acc-new-balance').value = '';
                 showToast('Изменения отменены. Возвращено предыдущее значение.');
-            } else {
-                showToast('Нет изменений для отмены', true);
+                loadAccountsTable();
+                loadDashboardStats();
+                loadCompanies();
+            } catch (e) {
+                showToast(e.message, true);
             }
-            
-            // Очищаем поле ввода нового значения при отмене
-            document.getElementById('acc-new-balance').value = '';
         }
+
         // ========== АДМИНКА (УЧЁТНЫЕ ЗАПИСИ) ==========
-        const DEFAULT_USERS = [
-            { role: 'Администратор', fio: 'Иванов', password: '1234' },
-            { role: 'Дилер', fio: 'Петров', password: '1234' },
-            { role: 'Позиционер', fio: 'Сидоров', password: '1234' },
-            { role: 'Руководитель', fio: 'Студент', password: '1234' }
-        ];
+        let cachedUsers = [];
 
-        function getUsers() {
-            const saved = localStorage.getItem('system_users');
-            return saved ? JSON.parse(saved) : DEFAULT_USERS;
-        }
-        
-        function saveUsersToStorage(users) {
-            localStorage.setItem('system_users', JSON.stringify(users));
-        }
-
-        function renderUsersTable() {
+        async function renderUsersTable() {
             const tbody = document.querySelector('#users-table tbody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            
-            const users = getUsers();
-            users.forEach((u, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${u.role}</td>
-                        <td>${u.fio}</td>
-                        <td>${u.password}</td>
-                        <td style="text-align: center;">
-                            <button onclick="editUser(${index})" style="background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; margin-right:5px;">✏️</button>
-                            <button onclick="deleteUser(${index})" style="background:#dc3545; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">🗑️</button>
-                        </td>
-                    </tr>
-                `;
-            });
+
+            try {
+                const data = await apiRequest('users_list');
+                cachedUsers = data.users || [];
+                cachedUsers.forEach((u, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${u.role}</td>
+                            <td>${u.fio}</td>
+                            <td>${u.password}</td>
+                            <td style="text-align: center;">
+                                <button onclick="editUser(${index})" style="background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; margin-right:5px;">✏️</button>
+                                <button onclick="deleteUser(${index})" style="background:#dc3545; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (e) {
+                showToast(e.message, true);
+            }
         }
 
-        function saveUser() {
+        async function saveUser() {
             const role = document.getElementById('new-user-role').value;
             const fio = document.getElementById('new-user-fio').value.trim();
             const pass = document.getElementById('new-user-pass').value.trim();
-            const editIndex = document.getElementById('edit-user-index').value;
+            const editId = document.getElementById('edit-user-index').value;
 
             if (!fio || !pass) { showToast('Заполните ФИО и Пароль!', true); return; }
-            
-            let users = getUsers();
 
-            if (editIndex !== "") {
-                const idx = parseInt(editIndex);
-                if (users.some((u, i) => i !== idx && u.fio.toLowerCase() === fio.toLowerCase())) {
-                    showToast('Пользователь с таким ФИО уже существует!', true); return;
-                }
-                users[idx] = { role: role, fio: fio, password: pass };
-                saveUsersToStorage(users);
-                renderUsersTable();
-                showToast('Пользователь обновлен!');
+            try {
+                const res = await apiRequest('users_save', 'POST', {
+                    id: editId !== '' ? parseInt(editId) : null,
+                    role: role,
+                    fio: fio,
+                    password: pass
+                });
+                await renderUsersTable();
+                showToast(res.message || 'Сохранено!');
                 cancelEdit();
-            } else {
-                if (users.some(u => u.fio.toLowerCase() === fio.toLowerCase())) {
-                    showToast('Пользователь с таким ФИО уже существует!', true); return;
-                }
-                users.push({ role: role, fio: fio, password: pass });
-                saveUsersToStorage(users);
-                renderUsersTable();
-                showToast('Пользователь добавлен!');
-                cancelEdit();
+            } catch (e) {
+                showToast(e.message, true);
             }
         }
 
         function editUser(index) {
-            const users = getUsers();
-            const user = users[index];
+            const user = cachedUsers[index];
+            if (!user) return;
 
             document.getElementById('new-user-role').value = user.role;
             document.getElementById('new-user-fio').value = user.fio;
             document.getElementById('new-user-pass').value = user.password;
-            document.getElementById('edit-user-index').value = index;
+            document.getElementById('edit-user-index').value = user.id;
 
             document.getElementById('form-title').textContent = 'Редактировать пользователя';
             document.getElementById('btn-save-user').textContent = 'Сохранить изменения';
@@ -653,23 +1619,25 @@
             document.getElementById('btn-cancel-edit').style.display = 'none';
         }
 
-        function deleteUser(index) {
-            const users = getUsers();
-            const user = users[index];
-            
+        async function deleteUser(index) {
+            const user = cachedUsers[index];
+            if (!user) return;
+
             if (user.fio === auth.fio) {
                 showToast('Вы не можете удалить самого себя!', true);
                 return;
             }
 
             if (confirm('Вы уверены, что хотите удалить пользователя "' + user.fio + '"?')) {
-                users.splice(index, 1);
-                saveUsersToStorage(users);
-                renderUsersTable();
-                showToast('Пользователь удален!');
-                
-                if (document.getElementById('edit-user-index').value !== "") {
-                    cancelEdit();
+                try {
+                    const res = await apiRequest('users_delete', 'POST', { id: user.id });
+                    await renderUsersTable();
+                    showToast(res.message || 'Пользователь удален!');
+                    if (document.getElementById('edit-user-index').value !== "") {
+                        cancelEdit();
+                    }
+                } catch (e) {
+                    showToast(e.message, true);
                 }
             }
         }

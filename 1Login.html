@@ -92,17 +92,6 @@
         text-align: center;
     }
     .error-msg.show { display: block; }
-
-    .hint {
-        margin-top: 18px;
-        font-size: 11px;
-        color: #777;
-        text-align: center;
-        border-top: 1px dashed #ddd;
-        padding-top: 12px;
-        line-height: 1.5;
-    }
-    .hint b { color: #002b5c; }
 </style>
 </head>
 <body>
@@ -124,33 +113,10 @@
         </div>
         <button type="submit" class="btn-login">Войти</button>
     </form>
-
-    <div class="hint">
-        Учётные данные для входа:<br>
-        <b>Иванов</b> / 1234 — Администратор<br>
-        <b>Петров</b> / 1234 — Дилер<br>
-        <b>Сидоров</b> / 1234 — Позиционер<br>
-        <b>Красникова</b> / 1234 — Руководитель
-    </div>
 </div>
 
 <script>
-    // Данные по умолчанию (если localStorage пуст)
-    const DEFAULT_USERS = [
-        { role: 'Администратор', fio: 'Иванов',   password: '1234' },
-        { role: 'Дилер',         fio: 'Петров',   password: '1234' },
-        { role: 'Позиционер',    fio: 'Сидоров',  password: '1234' },
-        { role: 'Руководитель',  fio: 'Красникова',  password: '1234' }
-    ];
-
-    
     const MAIN_PAGE = '2HTML.html';
-
-
-    function getUsers() {
-        const saved = localStorage.getItem('system_users');
-        return saved ? JSON.parse(saved) : DEFAULT_USERS;
-    }
 
     function showError(text) {
         const box = document.getElementById('errorMsg');
@@ -165,7 +131,7 @@
         document.getElementById('password').classList.remove('error');
     }
 
-    function handleLogin(event) {
+    async function handleLogin(event) {
         event.preventDefault();
         clearError();
 
@@ -174,15 +140,22 @@
 
         if (!login || !password) { showError('Заполните логин и пароль!'); return false; }
 
-        const users = getUsers();
-        const user = users.find(u =>
-            u.fio.toLowerCase() === login.toLowerCase() && u.password === password
-        );
-
-        if (!user) { showError('Неверный логин или пароль!'); return false; }
-
-        sessionStorage.setItem('auth_user', JSON.stringify({ fio: user.fio, role: user.role }));
-        window.location.href = MAIN_PAGE;
+        try {
+            const res = await fetch('api.php?action=login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fio: login, password: password })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                showError(data.error || 'Неверный логин или пароль!');
+                return false;
+            }
+            sessionStorage.setItem('auth_user', JSON.stringify(data.user));
+            window.location.href = MAIN_PAGE;
+        } catch (err) {
+            showError('Ошибка соединения с сервером (проверьте XAMPP Apache и PostgreSQL)');
+        }
         return false;
     }
 
