@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net" agent="Antigravity">
+  <diagram id="security-threat-intruder" name="Модель угроз и нарушителя ИБ">
+    <mxGraphModel dx="976" dy="732" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sec_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=19;fontStyle=1;fontColor=#002b5c;" value="Модель угроз и модель нарушителя информационной безопасности АИС НОСТРО" vertex="1">
+          <mxGeometry height="35" width="1120" x="220" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_intruder" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff0f0;strokeColor=#b85450;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="1. Модель нарушителя (категории и возможности)" vertex="1">
+          <mxGeometry height="420" width="440" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="int_ext" parent="grp_intruder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;align=left;spacingLeft=10;fontSize=11;" value="Внешний нарушитель (базовый / средний уровень)&lt;br&gt;• Источник: сеть Интернет / внешняя подсеть&lt;br&gt;• Цель: несанкционированный доступ к API, подбор паролей,&lt;br&gt;  SQL-инъекции, перехват секретов (токены, пароли БД)&lt;br&gt;• Возможности: типовые сетевые сканеры, перебор,&lt;br&gt;  эксплуатация уязвимостей веб-форм" vertex="1">
+          <mxGeometry height="115" width="400" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="int_int1" parent="grp_intruder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;align=left;spacingLeft=10;fontSize=11;" value="Внутренний нарушитель (пользователь системы)&lt;br&gt;• Дилер / Позиционер со штатным доступом&lt;br&gt;• Цель: подмена сумм/реквизитов платежа, превышение&lt;br&gt;  полномочий (доступ к админке), уход в овердрафт,&lt;br&gt;  повторное списание средств&lt;br&gt;• Возможности: знание интерфейса, подмена запросов браузера" vertex="1">
+          <mxGeometry height="115" width="400" x="20" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="int_int2" parent="grp_intruder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;align=left;spacingLeft=10;fontSize=11;" value="Привилегированный нарушитель (администратор)&lt;br&gt;• Администратор / разработчик с доступом к ОС и БД&lt;br&gt;• Цель: неконтролируемое изменение курсов валют,&lt;br&gt;  компрометация db.php / telegram_config.php&lt;br&gt;• Риск: утечка секретов через GitHub" vertex="1">
+          <mxGeometry height="95" width="400" x="20" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_threats" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff8e6;strokeColor=#d79b00;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="2. Актуальные угрозы безопасности (УБИ)" vertex="1">
+          <mxGeometry height="420" width="470" x="530" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_1" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У1. Компрометация учётной записи (подбор/кража пароля)" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_2" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У2. SQL-инъекции через фильтры и сортировку в API" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_3" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У3. XSS-атаки (внедрение скриптов в поля компании / ID)" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_4" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У4. Нарушение целостности остатков / двойное списание" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_5" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У5. Несанкционированный уход в отрицательный остаток" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_6" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У6. Подмена котировок валют без следа в системе" vertex="1">
+          <mxGeometry height="45" width="430" x="20" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="thr_7" parent="grp_threats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=11;align=left;spacingLeft=10;" value="У7. Утечка пароля БД и токена бота в открытый репозиторий" vertex="1">
+          <mxGeometry height="40" width="430" x="20" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_measures" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="3. Реализованные механизмы защиты" vertex="1">
+          <mxGeometry height="420" width="460" x="1050" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="m_1" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М1. Двухфакторная аутентификация (2FA) через Telegram-бот&#xa;(одноразовый 6-значный код со сроком жизни 5 мин, удаление демо-логинов)" vertex="1">
+          <mxGeometry height="50" width="420" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="m_2" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М2. Параметризованные запросы PDO (PostgreSQL) +&#xa;строгий белый список колонок и направлений сортировки (ASC/DESC)" vertex="1">
+          <mxGeometry height="50" width="420" x="20" y="102" as="geometry" />
+        </mxCell>
+        <mxCell id="m_3" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М3. Экранирование вывода HTML (escapeHtml) на клиенте" vertex="1">
+          <mxGeometry height="42" width="420" x="20" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="m_4" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М4. Транзакции БД (beginTransaction / commit / rollBack) и&#xa;блокировка повторного списания по статусу «Отправлен»" vertex="1">
+          <mxGeometry height="50" width="420" x="20" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="m_5" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М5. Автоматический контроль отрицательного остатка&#xa;(всплывающее предупреждение alert + цветовая индикация строки)" vertex="1">
+          <mxGeometry height="45" width="420" x="20" y="268" as="geometry" />
+        </mxCell>
+        <mxCell id="m_6" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М6. Журнал аудита курсов валют (currency_history) +&#xa;сохранение прежних коэффициентов при недоступности ЦБ РФ" vertex="1">
+          <mxGeometry height="45" width="420" x="20" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="m_7" parent="grp_measures" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;align=left;spacingLeft=10;" value="М7. Исключение db.php и telegram_config.php через .gitignore" vertex="1">
+          <mxGeometry height="38" width="420" x="20" y="372" as="geometry" />
+        </mxCell>
+        <mxCell id="sec_next" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0056b3;fontSize=12;align=left;spacingLeft=15;" value="Рекомендуемые меры дальнейшего усиления ИБ (для внедрения в промышленную эксплуатацию):&#xa;• Хэширование паролей в таблице users (password_hash / password_verify вместо открытого хранения)&#xa;• Перенос проверки ролей и сессий на сервер (PHP $_SESSION) + CSRF-токены + обязательный HTTPS (TLS)" vertex="1">
+          <mxGeometry height="80" width="1470" x="40" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" edge="1" parent="1" source="int_ext" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=1.5;" target="thr_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" edge="1" parent="1" source="int_ext" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=1.5;" target="thr_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" edge="1" parent="1" source="int_int1" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=1.5;" target="thr_4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" edge="1" parent="1" source="int_int2" style="endArrow=classic;html=1;strokeColor=#b85450;strokeWidth=1.5;" target="thr_7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" edge="1" parent="1" source="thr_1" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="m_1" value="Нейтрализуется">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" edge="1" parent="1" source="thr_2" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="m_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" edge="1" parent="1" source="thr_4" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="m_4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="s8" edge="1" parent="1" source="thr_7" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="m_7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
