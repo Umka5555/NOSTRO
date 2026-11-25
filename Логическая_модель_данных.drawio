@@ -1,0 +1,57 @@
+<mxfile host="app.diagrams.net" agent="Antigravity">
+  <diagram id="logical-data-model" name="Логическая модель данных">
+    <mxGraphModel dx="1220" dy="915" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="lm_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=19;fontStyle=1;fontColor=#002b5c;" value="Логическая модель данных АИС «Платежи и позиции по счетам НОСТРО»" vertex="1">
+          <mxGeometry height="35" width="1000" x="250" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff8e6;strokeColor=#d79b00;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Пользователь&#xa;──────────────────&#xa;PK  Идентификатор&#xa;     ФИО (Логин, уникальный)&#xa;     Роль (Администратор, Дилер,&#xa;     Позиционер, Руководитель)&#xa;     Пароль&#xa;     Telegram Chat ID&#xa;     Одноразовый код (OTP)&#xa;     Срок действия OTP" vertex="1">
+          <mxGeometry height="190" width="260" x="60" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_curr" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Валюта&#xa;──────────────────&#xa;PK  Код валюты (RUB, USD, EUR, CNY)&#xa;     Наименование валюты&#xa;     Курс к рублю (котировка)&#xa;     Дата курса" vertex="1">
+          <mxGeometry height="130" width="270" x="430" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_hist" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="История котировок валют&#xa;──────────────────&#xa;PK  Идентификатор записи&#xa;FK  Код валюты&#xa;     Прежний курс&#xa;     Новый курс&#xa;     Дата курса&#xa;     Источник (Вручную / ЦБ РФ)&#xa;     Дата и время изменения" vertex="1">
+          <mxGeometry height="170" width="260" x="830" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_acc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Счёт НОСТРО&#xa;──────────────────&#xa;PK  Номер счёта (уникальный)&#xa;FK  Код валюты&#xa;     Дата обновления&#xa;     Текущий остаток&#xa;     Предыдущий остаток&#xa;     Компания (владелец счёта)" vertex="1">
+          <mxGeometry height="160" width="270" x="430" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_deal" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Сделка (FX / MM)&#xa;──────────────────&#xa;PK  Идентификатор сделки&#xa;     Дата и время сделки&#xa;     Тип сделки (FX Deals / MM Deals)&#xa;     Сумма сделки&#xa;FK  Код валюты&#xa;FK  Счёт НОСТРО&#xa;     Направление&#xa;     Счёт отправителя / получателя&#xa;     Компания (контрагент)&#xa;     Статус сделки" vertex="1">
+          <mxGeometry height="210" width="280" x="60" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_pos" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Позиция на дату по счёту&#xa;──────────────────&#xa;PK  Идентификатор позиции&#xa;     Дата позиции&#xa;FK  Счёт НОСТРО&#xa;     Сумма операции&#xa;     Остаток по позиции&#xa;FK  Код валюты&#xa;     Счёт отправителя / получателя&#xa;     Компания (контрагент)&#xa;     Статус позиции" vertex="1">
+          <mxGeometry height="210" width="280" x="425" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_pay" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;verticalAlign=top;spacingTop=8;" value="Платёж&#xa;──────────────────&#xa;PK  Идентификатор платежа&#xa;     Дата платежа&#xa;     Сумма платежа&#xa;FK  Код валюты&#xa;FK  Счёт НОСТРО&#xa;     Направление (Входящий/Исходящий)&#xa;FK  Счёт отправителя (списание)&#xa;FK  Счёт получателя (зачисление)&#xa;     Тип сделки&#xa;     Компания (контрагент)&#xa;     Статус платежа" vertex="1">
+          <mxGeometry height="230" width="290" x="810" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" edge="1" parent="1" source="ent_curr" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="ent_hist" value="1 : N (фиксирует изменения)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" edge="1" parent="1" source="ent_curr" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="ent_acc" value="1 : N (валюта счёта)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" edge="1" parent="1" source="ent_acc" style="endArrow=classic;html=1;strokeColor=#0056b3;strokeWidth=1.5;" target="ent_deal" value="1 : N (счёт в сделках)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" edge="1" parent="1" source="ent_acc" style="endArrow=classic;html=1;strokeColor=#0056b3;strokeWidth=1.5;" target="ent_pos" value="1 : N (счёт в позициях)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" edge="1" parent="1" source="ent_acc" style="endArrow=classic;html=1;strokeColor=#0056b3;strokeWidth=1.5;" target="ent_pay" value="1 : N (списание / зачисление)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r6" edge="1" parent="1" source="ent_deal" style="endArrow=classic;html=1;dashed=1;strokeColor=#666666;strokeWidth=1.5;" target="ent_pay" value="порождает платёж (1 : N)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="790" />
+              <mxPoint x="955" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
