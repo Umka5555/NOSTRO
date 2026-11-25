@@ -1,0 +1,103 @@
+<mxfile host="app.diagrams.net" agent="Antigravity">
+  <diagram id="component-diagram-nostro" name="Схема компонентов системы">
+    <mxGraphModel dx="1176" dy="882" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#002b5c;" value="Схема компонентов АИС «Платежи и позиции по счетам НОСТРО»" vertex="1">
+          <mxGeometry height="36" width="960" x="320" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_user" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#dae8fc;strokeColor=#0056b3;fontStyle=1;fontSize=12;" value="Пользователи системы&#xa;(Администратор, Дилер,&#xa;Позиционер, Руководитель)" vertex="1">
+          <mxGeometry height="95" width="50" x="60" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_frontend" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f0f6ff;strokeColor=#0056b3;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="Клиентская часть (Веб-браузер — HTML / CSS / JavaScript)" vertex="1">
+          <mxGeometry height="430" width="320" x="210" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_login" parent="grp_frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;fontSize=12;" value="1Login.html&#xa;Модуль авторизации и 2FA&#xa;(логин/пароль + ввод OTP-кода)" vertex="1">
+          <mxGeometry height="70" width="280" x="20" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_main" parent="grp_frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="2HTML.html (SPA-интерфейс)&#xa;• Главная (Дашборд)&#xa;• Платежи (списание / зачисление)&#xa;• Позиции по счетам&#xa;• Счета НОСТРО (редактирование остатков)&#xa;• Сделки FX/MM (пересчёт валют)&#xa;• НСИ и Отчёты (котировки, история, CSV)&#xa;• Администрирование (пользователи, Chat ID)" vertex="1">
+          <mxGeometry height="190" width="280" x="20" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="fe_storage" parent="grp_frontend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f0fa;strokeColor=#6c8ebf;fontSize=11;" value="SessionStorage (auth_user)&#xa;и модальное редактирование" vertex="1">
+          <mxGeometry height="55" width="280" x="20" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_backend" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff8e6;strokeColor=#d79b00;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="Серверная часть (XAMPP: Apache + PHP 8)" vertex="1">
+          <mxGeometry height="630" width="420" x="610" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="be_router" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=12;" value="api.php — Единый REST/JSON API-маршрутизатор" vertex="1">
+          <mxGeometry height="40" width="380" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="be_auth" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" value="Компонент авторизации и 2FA&#xa;(login, verify_otp, генерация OTP)" vertex="1">
+          <mxGeometry height="60" width="380" x="20" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="be_pay" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" value="Компонент платежей и взаиморасчётов&#xa;(payment_save, payment_status, payment_delete,&#xa;транзакционное списание/зачисление остатков)" vertex="1">
+          <mxGeometry height="70" width="380" x="20" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="be_deals" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" value="Компонент сделок и позиций&#xa;(deals_list, deal_save, deal_delete,&#xa;positions_list, position_save, position_delete)" vertex="1">
+          <mxGeometry height="70" width="380" x="20" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="be_acc" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" value="Компонент счетов НОСТРО и пользователей&#xa;(accounts_list, account_update, account_revert,&#xa;users_list, users_save, companies_list)" vertex="1">
+          <mxGeometry height="70" width="380" x="20" y="345" as="geometry" />
+        </mxCell>
+        <mxCell id="be_nsi" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d79b00;fontSize=12;" value="Компонент НСИ, котировок и отчётов&#xa;(currencies_list, currency_save, currencies_fetch,&#xa;currency_history_list, reports_list, dashboard_stats)" vertex="1">
+          <mxGeometry height="70" width="380" x="20" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="be_db" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;" value="db.php&#xa;Слой доступа к БД (PDO / pdo_pgsql)" vertex="1">
+          <mxGeometry height="80" width="185" x="20" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="be_tgcfg" parent="grp_backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=11;" value="telegram_config.php&#xa;Конфигурация токена бота&#xa;(2FA)" vertex="1">
+          <mxGeometry height="80" width="185" x="215" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_db" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="СУБД PostgreSQL 18 (База данных NOSTRO)" vertex="1">
+          <mxGeometry height="440" width="360" x="1120" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_users" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="users&#xa;(учётные записи, роли, telegram_chat_id, otp_code)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="db_accounts" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="nostro_accounts&#xa;(счета НОСТРО, остатки, prev_balance, владельцы)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="db_deals" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="deals&#xa;(сделки FX Deals / MM Deals, суммы, компании)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="db_positions" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="positions&#xa;(позиции на дату по счёту, суммы, остатки)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="db_payments" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="payments&#xa;(платежи, отправитель/получатель, статусы)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="db_curr" parent="grp_db" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#ffffff;strokeColor=#2e7d32;fontSize=11;" value="currencies и currency_history&#xa;(котировки валют к RUB и журнал изменений)" vertex="1">
+          <mxGeometry height="55" width="320" x="20" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_ext" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;startSize=30;rounded=1;" value="Внешние сервисы и системы" vertex="1">
+          <mxGeometry height="240" width="360" x="1120" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_tg" parent="grp_ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0288d1;fontSize=12;fontStyle=1;" value="Telegram Bot API&#xa;(api.telegram.org)&#xa;Отправка 6-значных OTP-кодов 2FA" vertex="1">
+          <mxGeometry height="75" width="320" x="20" y="45" as="geometry" />
+        </mxCell>
+        <mxCell id="ext_cbr" parent="grp_ext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontSize=12;fontStyle=1;" value="Сервис котировок ЦБ РФ&#xa;(cbr-xml-daily.ru)&#xa;Курсы USD / EUR / CNY к RUB" vertex="1">
+          <mxGeometry height="75" width="320" x="20" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="actor_user" style="endArrow=classic;html=1;rounded=0;strokeColor=#0056b3;strokeWidth=1.5;" target="fe_login" value="HTTP / Браузер">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="actor_user" style="endArrow=classic;html=1;rounded=0;strokeColor=#0056b3;strokeWidth=1.5;" target="fe_main" value="Работа в системе">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="grp_frontend" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#d79b00;strokeWidth=1.8;" target="be_router" value="fetch() JSON&#xa;(REST API)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="be_db" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#2e7d32;strokeWidth=1.8;" target="grp_db" value="PDO / SQL&#xa;(TCP 5432)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="be_auth" style="endArrow=classic;html=1;rounded=0;strokeColor=#0288d1;strokeWidth=1.6;" target="ext_tg" value="HTTPS POST /sendMessage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="be_nsi" style="endArrow=classic;startArrow=classic;html=1;rounded=0;strokeColor=#7b1fa2;strokeWidth=1.6;" target="ext_cbr" value="HTTPS GET daily_json.js">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
