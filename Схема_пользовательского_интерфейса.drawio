@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="Antigravity">
+  <diagram id="ui-schema-nostro" name="Схема пользовательского интерфейса">
+    <mxGraphModel dx="1828" dy="1017" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ui_title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=19;fontStyle=1;fontColor=#002b5c;" value="Схема пользовательского интерфейса АИС «Платежи и позиции по счетам НОСТРО»" vertex="1">
+          <mxGeometry height="35" width="1080" x="260" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="scr_login" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0056b3;fontStyle=1;fontSize=12;align=left;spacingLeft=12;" value="Экран 1: Авторизация (1Login.html)&#xa;• Поле: Логин (ФИО)&#xa;• Поле: Пароль&#xa;• Кнопка: «Войти»" vertex="1">
+          <mxGeometry height="100" width="260" x="690" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="scr_2fa" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0288d1;fontStyle=1;fontSize=12;align=left;spacingLeft=12;" value="Экран 1.1: Двухфакторная проверка&#xa;(если задан Telegram Chat ID)&#xa;• Поле: «Код из Telegram» (6 цифр)&#xa;• Кнопки: «Подтвердить вход», «Назад»" vertex="1">
+          <mxGeometry height="105" width="260" x="40" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="role_gate" parent="1" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;" value="Проверка роли&#xa;(auth.role)" vertex="1">
+          <mxGeometry height="100" width="140" x="430" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="grp_main" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f0f6ff;strokeColor=#002b5c;fontStyle=1;fontSize=13;startSize=32;rounded=1;" value="Основное рабочее окно (2HTML.html) — Левое меню + Область вкладок + Кнопка «Выйти»" vertex="1">
+          <mxGeometry height="910" width="980" x="80" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_dash" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="1. Главная (Дашборд)&#xa;• Карточка: Баланс НОСТРО (в RUB по курсам НСИ)&#xa;• Карточка: Активные позиции&#xa;• Карточка: Платежи в обработке" vertex="1">
+          <mxGeometry height="95" width="420" x="25" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_pay" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="2. Платежи&#xa;• Форма «Новый платёж» (ID, дата, сумма, счёт НОСТРО,&#xa;  направление, валюта, отправитель, получатель, компания)&#xa;• Блок «Управление статусами»&#xa;• Таблица «База платежей» (фильтры, сортировка, ✏️, 🗑️)" vertex="1">
+          <mxGeometry height="115" width="420" x="25" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_pos" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="3. Позиции&#xa;• Форма «НОСТРО Позиции» (счёт, дата, сумма, остаток,&#xa;  валюта, статус, компания) + предупреждение при &lt; 0&#xa;• Таблица «База позиций» (фильтры, сортировка, ✏️, 🗑️)" vertex="1">
+          <mxGeometry height="105" width="420" x="25" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_acc" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="4. Редактирование остатков&#xa;• Форма «Счёт НОСТРО» (Подтвердить / Вернуть)&#xa;• Таблица «Справочник счетов НОСТРО»&#xa;  (подсветка отрицательных остатков, фильтры, ✏️, 🗑️)" vertex="1">
+          <mxGeometry height="105" width="420" x="25" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_deals" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="5. Сделки FX/MM&#xa;• Формы «Сделка FX Deals» и «Сделка MM Deals»&#xa;  (с пересчётом суммы при смене валюты и подсказками)&#xa;• Таблица «База сделок» (фильтры, сортировка, ✏️, 🗑️)" vertex="1">
+          <mxGeometry height="110" width="430" x="15" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_nsi" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=12;" value="6. НСИ и Отчёты&#xa;• Справочник котировок валют (сохранение + загрузка ЦБ РФ)&#xa;• Таблица «История изменения котировок валют»&#xa;• Блок «НСИ Отчёты» (Сформировать / Выгрузить CSV)&#xa;• Таблица «Отчёт из базы данных» (фильтры, ✏️, 🗑️)" vertex="1">
+          <mxGeometry height="130" width="430" x="20" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="tab_admin" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;spacingLeft=10;fontSize=12;" value="7. Администратор (только Администратор / Руководитель)&#xa;• Таблица учётных записей (Роль, ФИО, Пароль, Telegram Chat ID)&#xa;• Форма добавления / редактирования / удаления пользователей" vertex="1">
+          <mxGeometry height="105" width="430" x="490" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="modal_edit" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;fontSize=12;fontStyle=1;" value="Модальное окно редактирования записи&#xa;• Поля выбранной сущности (платёж / позиция / счёт / сделка)&#xa;• Автопересчёт суммы при смене валюты по курсу НСИ&#xa;• Кнопки: «Сохранить изменения», «Отмена»" vertex="1">
+          <mxGeometry height="115" width="430" x="485" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="toast_alert" parent="grp_main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8d7da;strokeColor=#b85450;fontSize=12;fontStyle=1;" value="Система уведомлений: всплывающие предупреждения (alert при остатке &lt; 0) и статусные сообщения (Toast)" vertex="1">
+          <mxGeometry height="50" width="890" x="25" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="u1" edge="1" parent="1" source="scr_login" style="endArrow=classic;html=1;strokeColor=#0288d1;strokeWidth=1.5;" target="scr_2fa" value="Если включена 2FA">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u2" edge="1" parent="1" source="scr_login" style="endArrow=classic;html=1;strokeColor=#0056b3;strokeWidth=1.5;" target="role_gate" value="Успешный вход">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u3" edge="1" parent="1" source="scr_2fa" style="endArrow=classic;html=1;strokeColor=#0288d1;strokeWidth=1.5;" target="role_gate" value="Код подтверждён">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u4" edge="1" parent="1" source="role_gate" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.6;" target="tab_dash" value="Дилер / Позиционер /&#xa;Руководитель">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u5" edge="1" parent="1" source="role_gate" style="endArrow=classic;html=1;strokeColor=#d79b00;strokeWidth=1.6;" target="tab_admin" value="Администратор">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u6" edge="1" parent="1" source="tab_pay" style="endArrow=classic;html=1;dashed=1;strokeColor=#666666;" target="modal_edit" value="Кнопка ✏️">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="u7" edge="1" parent="1" source="tab_deals" style="endArrow=classic;html=1;dashed=1;strokeColor=#666666;" target="modal_edit" value="Кнопка ✏️">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
