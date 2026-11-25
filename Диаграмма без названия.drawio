@@ -1,0 +1,54 @@
+<mxfile host="app.diagrams.net" agent="Antigravity">
+  <diagram id="logical-data-model" name="Логическая модель данных">
+    <mxGraphModel dx="1220" dy="915" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="950" math="0" shadow="0">
+      <root>
+        <mxCell id="zwqfxVzgQisBXeyj5fpO-0" />
+        <mxCell id="zwqfxVzgQisBXeyj5fpO-1" parent="zwqfxVzgQisBXeyj5fpO-0" />
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-0" parent="zwqfxVzgQisBXeyj5fpO-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=19;fontStyle=1;fontColor=#002b5c;" value="Физическая модель данных (PostgreSQL 18 — БД NOSTRO)" vertex="1">
+          <mxGeometry height="35" width="1000" x="685" y="188" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-1" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff8e6;strokeColor=#d79b00;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="Пользователи&lt;br&gt;──────────────────────────────&lt;br&gt;PK  id : SERIAL NOT NULL&lt;br&gt;     role : VARCHAR(50) NOT NULL&lt;br&gt;UQ  fio : VARCHAR(100) NOT NULL&lt;br&gt;     password : VARCHAR(255) NOT NULL&lt;br&gt;     telegram_chat_id : VARCHAR(50)&lt;br&gt;     otp_code : VARCHAR(10)&lt;br&gt;     otp_expires_at : TIMESTAMP&lt;br&gt;──────────────────────────────&lt;br&gt;IDX: users_fio_unique_idx (fio)" vertex="1">
+          <mxGeometry height="210" width="290" x="460" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-2" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="валюты&lt;br&gt;──────────────────────────────&lt;br&gt;PK  code : VARCHAR(10) NOT NULL&lt;br&gt;     rate_date : DATE NOT NULL&lt;br&gt;     name : VARCHAR(50) NOT NULL&lt;br&gt;     rate_to_rub : NUMERIC(12,4) NOT NULL" vertex="1">
+          <mxGeometry height="130" width="300" x="845" y="257" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-3" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="история валютных котировок&lt;br&gt;──────────────────────────────&lt;br&gt;PK  id : SERIAL NOT NULL&lt;br&gt;     code : VARCHAR(10) NOT NULL&lt;br&gt;     old_rate : NUMERIC(12,4)&lt;br&gt;     new_rate : NUMERIC(12,4) NOT NULL&lt;br&gt;     rate_date : DATE NOT NULL&lt;br&gt;     source : VARCHAR(100) NOT NULL&lt;br&gt;     changed_at : TIMESTAMP NOT NULL" vertex="1">
+          <mxGeometry height="170" width="290" x="1255" y="258" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-4" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="nostro_аккаунты&lt;br&gt;──────────────────────────────&lt;br&gt;PK  id : SERIAL NOT NULL&lt;br&gt;UQ  account_number : VARCHAR(50) NOT NULL&lt;br&gt;     acc_date : DATE NOT NULL&lt;br&gt;FK  currency : VARCHAR(10) REFERENCES currencies(code)&lt;br&gt;     balance : NUMERIC(15,2) NOT NULL&lt;br&gt;     prev_balance : NUMERIC(15,2) NOT NULL&lt;br&gt;     owner_name : VARCHAR(150) NOT NULL" vertex="1">
+          <mxGeometry height="180" width="340" x="825" y="448" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-5" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="deals&#xa;──────────────────────────────&#xa;PK  id : SERIAL NOT NULL&#xa;UQ  deal_code : VARCHAR(100) NOT NULL&#xa;     deal_date : TIMESTAMP NOT NULL&#xa;     amount : NUMERIC(15,2) NOT NULL&#xa;     nostro_account : VARCHAR(50)&#xa;     direction : VARCHAR(30) NOT NULL&#xa;FK  currency : VARCHAR(10) REFERENCES currencies(code)&#xa;     sender_account : VARCHAR(50)&#xa;     receiver_account : VARCHAR(50)&#xa;     status : VARCHAR(50) NOT NULL&#xa;     deal_type : VARCHAR(30) NOT NULL&#xa;     company : VARCHAR(150) NOT NULL" vertex="1">
+          <mxGeometry height="260" width="340" x="445" y="688" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-6" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="positions&#xa;──────────────────────────────&#xa;PK  id : SERIAL NOT NULL&#xa;UQ  position_code : VARCHAR(100)&#xa;     pos_date : DATE NOT NULL&#xa;     amount : NUMERIC(15,2) NOT NULL&#xa;     balance : NUMERIC(15,2) NOT NULL&#xa;     currency : VARCHAR(10) NOT NULL&#xa;     account_number : VARCHAR(50) NOT NULL&#xa;     sender_account : VARCHAR(50)&#xa;     receiver_account : VARCHAR(50)&#xa;     status : VARCHAR(50) NOT NULL&#xa;     company : VARCHAR(150) NOT NULL&#xa;     created_at : TIMESTAMP&#xa;──────────────────────────────&#xa;IDX: positions_code_unique_idx" vertex="1">
+          <mxGeometry height="270" width="320" x="835" y="688" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-7" parent="zwqfxVzgQisBXeyj5fpO-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0056b3;align=left;spacingLeft=10;fontSize=11;verticalAlign=top;spacingTop=8;" value="payments&#xa;──────────────────────────────&#xa;PK  id : SERIAL NOT NULL&#xa;UQ  payment_code : VARCHAR(100) NOT NULL&#xa;     pay_date : DATE NOT NULL&#xa;     amount : NUMERIC(15,2) NOT NULL&#xa;     nostro_account : VARCHAR(50)&#xa;     direction : VARCHAR(30)&#xa;     currency : VARCHAR(10) NOT NULL&#xa;     sender_account : VARCHAR(50)&#xa;     receiver_account : VARCHAR(50)&#xa;     status : VARCHAR(50) NOT NULL&#xa;     deal_type : VARCHAR(30)&#xa;     company : VARCHAR(150) NOT NULL&#xa;     created_at : TIMESTAMP" vertex="1">
+          <mxGeometry height="260" width="330" x="1215" y="688" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-8" edge="1" parent="zwqfxVzgQisBXeyj5fpO-1" source="LVcqS5Zfqg9NJfdZ7KdN-4" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="LVcqS5Zfqg9NJfdZ7KdN-2" value="FK: currency">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-9" edge="1" parent="zwqfxVzgQisBXeyj5fpO-1" source="LVcqS5Zfqg9NJfdZ7KdN-5" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="LVcqS5Zfqg9NJfdZ7KdN-2" value="FK: currency">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="795" y="618" />
+              <mxPoint x="795" y="323" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-10" edge="1" parent="zwqfxVzgQisBXeyj5fpO-1" source="LVcqS5Zfqg9NJfdZ7KdN-3" style="endArrow=classic;html=1;dashed=1;strokeColor=#2e7d32;strokeWidth=1.5;" target="LVcqS5Zfqg9NJfdZ7KdN-2" value="code">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-11" edge="1" parent="zwqfxVzgQisBXeyj5fpO-1" source="LVcqS5Zfqg9NJfdZ7KdN-6" style="endArrow=classic;html=1;dashed=1;strokeColor=#0056b3;strokeWidth=1.5;" target="LVcqS5Zfqg9NJfdZ7KdN-4" value="account_number">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LVcqS5Zfqg9NJfdZ7KdN-12" edge="1" parent="zwqfxVzgQisBXeyj5fpO-1" source="LVcqS5Zfqg9NJfdZ7KdN-7" style="endArrow=classic;html=1;dashed=1;strokeColor=#0056b3;strokeWidth=1.5;" target="LVcqS5Zfqg9NJfdZ7KdN-4" value="sender / receiver / nostro">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
