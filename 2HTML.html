@@ -80,7 +80,8 @@
 
         .tab-content {
             display: none;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 1450px;
             margin: 0 auto;
             animation: fadeIn 0.3s;
         }
@@ -92,7 +93,7 @@
 
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
             gap: 20px;
         }
         .card {
@@ -101,6 +102,7 @@
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border: 1px solid #b0c4de;
+            min-width: 0;
         }
         .card h2 {
             margin-top: 0;
@@ -122,10 +124,14 @@
             font-weight: bold;
             color: #444;
             font-size: 12px;
-            width: 130px;
+            width: 145px;
+            flex-shrink: 0;
         }
         .input-group input, .input-group select {
             flex: 1;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
             padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -221,15 +227,17 @@
         .data-table th {
             background-color: #f0f6ff;
             color: #002b5c;
-            padding: 8px;
+            padding: 7px 8px;
             border: 1px solid #cce0ff;
             text-align: left;
             white-space: nowrap;
         }
         .data-table th.sortable { cursor: pointer; user-select: none; }
         .data-table th.sortable:hover { background-color: #dcebff; }
-        .data-table td { padding: 7px 8px; border: 1px solid #e0e0e0; }
+        .data-table td { padding: 6px 8px; border: 1px solid #e0e0e0; }
         .data-table tbody tr:hover { background-color: #f8fbff; }
+        .data-table tbody tr.negative-row { background-color: #fde8e8; color: #842029; }
+        .data-table tbody tr.negative-row:hover { background-color: #fad1d1; }
         .btn-edit-row {
             background: #ffc107;
             color: #000;
@@ -242,6 +250,19 @@
             white-space: nowrap;
         }
         .btn-edit-row:hover { background: #e0a800; }
+        .btn-delete-row {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+            margin-left: 4px;
+        }
+        .btn-delete-row:hover { background: #c82333; }
 
         .modal-overlay {
             display: none;
@@ -335,15 +356,15 @@
                     <div class="input-group"><label>Идентификатор:</label><input type="text" id="pay-id" placeholder="Введите ID"></div>
                     <div class="input-group"><label>Дата:</label><input type="date" id="pay-date"></div>
                     <div class="input-group"><label>Сумма:</label><input type="number" id="pay-sum" placeholder="0.00" min="0"></div>
-                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pay-nostro" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pay-nostro" list="accounts-datalist" placeholder="Номер счёта"></div>
                     <div class="input-group"><label>Направление:</label>
                         <select id="pay-direction"><option value="Входящий">Входящий</option><option value="Исходящий">Исходящий</option></select>
                     </div>
                     <div class="input-group"><label>Валюта:</label>
                         <select id="pay-currency"><option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option></select>
                     </div>
-                    <div class="input-group"><label>Счёт Отправителя:</label><input type="text" id="pay-sender" placeholder="Номер счёта"></div>
-                    <div class="input-group"><label>Счёт Получателя:</label><input type="text" id="pay-receiver" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Счёт Отправителя:</label><input type="text" id="pay-sender" list="accounts-datalist" placeholder="Номер счёта"></div>
+                    <div class="input-group"><label>Счёт Получателя:</label><input type="text" id="pay-receiver" list="accounts-datalist" placeholder="Номер счёта"></div>
                     <div class="input-group"><label>Компания:</label><input type="text" id="pay-company" list="companies-datalist" placeholder="Наименование компании"></div>
                     <div class="button-group">
                         <button class="btn-reset" onclick="resetPaymentForm()">Очистить</button>
@@ -429,7 +450,7 @@
             <div class="card-grid">
                 <div class="card" style="grid-column: 1 / -1;">
                     <h2>НОСТРО Позиции</h2>
-                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pos-nostro" placeholder="Введите номер"></div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="pos-nostro" list="accounts-datalist" placeholder="Введите номер"></div>
                     <div class="input-group"><label>Дата:</label><input type="date" id="pos-date"></div>
                     <div class="input-group"><label>Сумма:</label><input type="number" id="pos-sum" placeholder="0.00"></div>
                     <div class="input-group"><label>Остаток:</label><input type="number" id="pos-balance" placeholder="0.00"></div>
@@ -598,7 +619,7 @@
                             <option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option>
                         </select>
                     </div>
-                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="fx-nostro" placeholder="40702810000000000001"></div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="fx-nostro" list="accounts-datalist" placeholder="40702810000000000001"></div>
                     <div class="input-group"><label>Контрагент (компания):</label><input type="text" id="fx-contragent" list="companies-datalist" placeholder="Наименование компании"></div>
                     <button class="btn-ok" onclick="generatePaymentFromDeal('FX')">Сохранить сделку и создать платёж</button>
                 </div>
@@ -611,7 +632,7 @@
                             <option value="RUB">RUB</option><option value="USD">USD</option><option value="EUR">EUR</option><option value="CNY">CNY</option>
                         </select>
                     </div>
-                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="mm-nostro" placeholder="40702810000000000001"></div>
+                    <div class="input-group"><label>Счёт НОСТРО:</label><input type="text" id="mm-nostro" list="accounts-datalist" placeholder="40702810000000000001"></div>
                     <div class="input-group"><label>Контрагент (компания):</label><input type="text" id="mm-contragent" list="companies-datalist" placeholder="Наименование компании"></div>
                     <button class="btn-ok" onclick="generatePaymentFromDeal('MM')">Сохранить сделку и создать платёж</button>
                 </div>
@@ -687,7 +708,10 @@
                     </div>
                     <div class="input-group"><label>Курс к RUB:</label><input type="number" id="nsi-curr-rate" step="0.0001" placeholder="98.50"></div>
                     <div class="input-group"><label>Дата курса:</label><input type="date" id="nsi-curr-date"></div>
-                    <button class="btn-ok" onclick="saveCurrencyRate()">Сохранить котировку</button>
+                    <div class="button-group">
+                        <button class="btn-ok" onclick="saveCurrencyRate()">Сохранить котировку</button>
+                        <button class="btn-reset" onclick="fetchCurrencyRates()">Получить котировки валют</button>
+                    </div>
                     <table class="data-table" id="currencies-table" style="margin-top:12px;">
                         <thead>
                             <tr><th>Валюта</th><th>Курс к RUB</th><th>Дата</th></tr>
@@ -708,6 +732,25 @@
                     <div class="button-group">
                         <button class="btn-ok" onclick="loadReportsTable()">Сформировать</button>
                         <button class="btn-reset" onclick="exportReportCsv()">Выгрузить CSV</button>
+                    </div>
+                </div>
+
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2>История изменения котировок валют</h2>
+                    <div class="table-wrap">
+                        <table class="data-table" id="currency-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Дата и время</th>
+                                    <th>Валюта</th>
+                                    <th>Старый курс</th>
+                                    <th>Новый курс</th>
+                                    <th>Дата курса</th>
+                                    <th>Источник</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -757,6 +800,7 @@
                                     <th class="sortable" onclick="toggleSort('rep','amount',loadReportsTable)">Сумма</th>
                                     <th>Валюта</th>
                                     <th class="sortable" onclick="toggleSort('rep','status',loadReportsTable)">Статус</th>
+                                    <th style="text-align:center;">Редактировать данные</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -777,6 +821,7 @@
                                 <th>Роль</th>
                                 <th>ФИО (Логин)</th>
                                 <th>Пароль</th>
+                                <th>Telegram Chat ID (2FA)</th>
                                 <th style="width: 140px; text-align: center;">Действия</th>
                             </tr>
                         </thead>
@@ -791,6 +836,7 @@
                     </div>
                     <div class="input-group"><label>ФИО:</label><input type="text" id="new-user-fio"></div>
                     <div class="input-group"><label>Пароль:</label><input type="text" id="new-user-pass"></div>
+                    <div class="input-group"><label>Telegram Chat ID:</label><input type="text" id="new-user-tg" placeholder="Например: 123456789 (необязательно)"></div>
 
                     <div class="button-group">
                         <button class="btn-ok" id="btn-save-user" style="width: 200px;" onclick="saveUser()">Добавить</button>
@@ -802,6 +848,7 @@
     </div>
 
     <datalist id="companies-datalist"></datalist>
+    <datalist id="accounts-datalist"></datalist>
 
     <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ЗАПИСИ -->
     <div id="edit-row-modal" class="modal-overlay" onclick="if(event.target===this) closeEditModal()">
@@ -844,6 +891,7 @@
                 loadDashboardStats();
                 loadCurrencies();
                 loadCompanies();
+                loadAccountsDatalist();
             });
         }
 
@@ -893,7 +941,7 @@
             if (tabId === 'tab-positions') loadPositionsTable();
             if (tabId === 'tab-accounts') loadAccountsTable();
             if (tabId === 'tab-deals') loadDealsTable();
-            if (tabId === 'tab-nsi') { loadCurrencies(); loadReportsTable(); }
+            if (tabId === 'tab-nsi') { loadCurrencies(); loadCurrencyHistory(); loadReportsTable(); }
         }
 
         // ========== ФИЛЬТРАЦИЯ И СОРТИРОВКА ==========
@@ -963,7 +1011,7 @@
                         <td>${escapeHtml(r.receiver_account)}</td>
                         <td>${escapeHtml(r.company)}</td>
                         <td>${escapeHtml(r.status)}</td>
-                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('payment', ${idx})">✏️ Редактировать</button></td>
+                        <td style="text-align:center; white-space:nowrap;"><button class="btn-edit-row" onclick="openEditModal('payment', ${idx})">✏️ Редактировать</button><button class="btn-delete-row" onclick="deleteRow('payment', ${idx})">🗑️ Удалить</button></td>
                     </tr>
                 `).join('') : '<tr><td colspan="10" style="text-align:center;color:#777;">Нет данных по заданному фильтру</td></tr>';
             } catch (e) {
@@ -977,7 +1025,7 @@
             if (!id || !sum) { showToast('Заполните ID и Сумму!', true); return; }
 
             try {
-                await apiRequest('payment_save', 'POST', {
+                const res = await apiRequest('payment_save', 'POST', {
                     payment_code: id,
                     pay_date: document.getElementById('pay-date').value,
                     amount: parseFloat(sum),
@@ -989,10 +1037,19 @@
                     company: document.getElementById('pay-company').value.trim(),
                     status: 'Отправлен'
                 });
-                showToast('Платёж отправлен и сохранён в БД!');
+                if (res.warnings && res.warnings.length > 0) {
+                    alert(res.warnings.join('\n'));
+                }
+                if (res.negative_accounts && res.negative_accounts.length > 0) {
+                    res.negative_accounts.forEach(na => {
+                        alert('Внимание! По счёту ' + na.account_number + ' образовался отрицательный остаток: ' + formatMoney(na.balance));
+                    });
+                }
+                showToast(res.message || 'Платёж отправлен и сохранён в БД!');
                 document.getElementById('pay-status-badge').textContent = 'Отправлен';
                 document.getElementById('pay-status-badge').className = 'status-badge status-otpravlen';
                 loadPaymentsTable();
+                loadAccountsTable();
                 loadDashboardStats();
                 loadCompanies();
             } catch (e) {
@@ -1048,7 +1105,7 @@
                         <td>${escapeHtml(r.nostro_account)}</td>
                         <td>${escapeHtml(r.company)}</td>
                         <td>${escapeHtml(r.status)}</td>
-                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('deal', ${idx})">✏️ Редактировать</button></td>
+                        <td style="text-align:center; white-space:nowrap;"><button class="btn-edit-row" onclick="openEditModal('deal', ${idx})">✏️ Редактировать</button><button class="btn-delete-row" onclick="deleteRow('deal', ${idx})">🗑️ Удалить</button></td>
                     </tr>
                 `).join('') : '<tr><td colspan="9" style="text-align:center;color:#777;">Нет сделок по заданному фильтру</td></tr>';
             } catch (e) {
@@ -1121,7 +1178,7 @@
                 const data = await apiRequest('positions_list', 'GET', null, qs);
                 cachedPositions = data.positions || [];
                 tbody.innerHTML = cachedPositions.length ? cachedPositions.map((r, idx) => `
-                    <tr>
+                    <tr class="${Number(r.balance) < 0 ? 'negative-row' : ''}">
                         <td>${escapeHtml(r.position_code)}</td>
                         <td>${escapeHtml(r.pos_date)}</td>
                         <td>${escapeHtml(r.account_number)}</td>
@@ -1130,9 +1187,12 @@
                         <td>${escapeHtml(r.currency)}</td>
                         <td>${escapeHtml(r.company)}</td>
                         <td>${escapeHtml(r.status)}</td>
-                        <td style="text-align:center;"><button class="btn-edit-row" onclick="openEditModal('position', ${idx})">✏️ Редактировать</button></td>
+                        <td style="text-align:center; white-space:nowrap;"><button class="btn-edit-row" onclick="openEditModal('position', ${idx})">✏️ Редактировать</button><button class="btn-delete-row" onclick="deleteRow('position', ${idx})">🗑️ Удалить</button></td>
                     </tr>
                 `).join('') : '<tr><td colspan="9" style="text-align:center;color:#777;">Нет позиций по заданному фильтру</td></tr>';
+                if (cachedPositions.some(r => Number(r.balance) < 0)) {
+                    showToast('Внимание: есть позиции с отрицательным остатком!', true);
+                }
             } catch (e) {
                 showToast(e.message, true);
             }
@@ -1141,6 +1201,10 @@
         async function submitPosition() {
             const acc = document.getElementById('pos-nostro').value.trim();
             if (!acc) { showToast('Укажите счёт НОСТРО!', true); return; }
+            const balVal = parseFloat(document.getElementById('pos-balance').value || '0');
+            if (balVal < 0) {
+                alert('Внимание! По счёту ' + acc + ' указан отрицательный остаток: ' + formatMoney(balVal));
+            }
             try {
                 await apiRequest('position_save', 'POST', {
                     account_number: acc,
@@ -1170,8 +1234,8 @@
                 const qs = buildQueryParams('rep');
                 const data = await apiRequest('reports_list', 'GET', null, 'report_type=' + encodeURIComponent(reportType) + (qs ? '&' + qs : ''));
                 lastReportRows = data.rows || [];
-                tbody.innerHTML = lastReportRows.length ? lastReportRows.map(r => `
-                    <tr>
+                tbody.innerHTML = lastReportRows.length ? lastReportRows.map((r, idx) => `
+                    <tr class="${(r.kind === 'position' && Number(r.amount) < 0) ? 'negative-row' : ''}">
                         <td>${escapeHtml(r.code)}</td>
                         <td>${escapeHtml(r.rep_date)}</td>
                         <td>${escapeHtml(r.category)}</td>
@@ -1180,8 +1244,9 @@
                         <td><b>${formatMoney(r.amount)}</b></td>
                         <td>${escapeHtml(r.currency)}</td>
                         <td>${escapeHtml(r.status)}</td>
+                        <td style="text-align:center; white-space:nowrap;"><button class="btn-edit-row" onclick="openReportEdit(${idx})">✏️ Редактировать</button><button class="btn-delete-row" onclick="deleteReportRow(${idx})">🗑️ Удалить</button></td>
                     </tr>
-                `).join('') : '<tr><td colspan="8" style="text-align:center;color:#777;">Нет данных для отчёта</td></tr>';
+                `).join('') : '<tr><td colspan="9" style="text-align:center;color:#777;">Нет данных для отчёта</td></tr>';
             } catch (e) {
                 showToast(e.message, true);
             }
@@ -1212,17 +1277,30 @@
                 const data = await apiRequest('accounts_list', 'GET', null, qs);
                 cachedAccounts = data.accounts || [];
                 tbody.innerHTML = cachedAccounts.length ? cachedAccounts.map((r, idx) => `
-                    <tr style="cursor:pointer;" onclick="selectAccount('${escapeHtml(r.account_number)}')">
+                    <tr class="${Number(r.balance) < 0 ? 'negative-row' : ''}" style="cursor:pointer;" onclick="selectAccount('${escapeHtml(r.account_number)}')">
                         <td><b>${escapeHtml(r.account_number)}</b></td>
                         <td>${escapeHtml(r.acc_date)}</td>
                         <td>${escapeHtml(r.currency)}</td>
                         <td><b>${formatMoney(r.balance)}</b></td>
                         <td>${escapeHtml(r.owner_name)}</td>
-                        <td style="text-align:center;" onclick="event.stopPropagation();"><button class="btn-edit-row" onclick="openEditModal('account', ${idx})">✏️ Редактировать</button></td>
+                        <td style="text-align:center; white-space:nowrap;" onclick="event.stopPropagation();"><button class="btn-edit-row" onclick="openEditModal('account', ${idx})">✏️ Редактировать</button><button class="btn-delete-row" onclick="deleteRow('account', ${idx})">🗑️ Удалить</button></td>
                     </tr>
                 `).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">Нет счетов по заданному фильтру</td></tr>';
             } catch (e) {
                 showToast(e.message, true);
+            }
+        }
+
+        async function loadAccountsDatalist() {
+            try {
+                const data = await apiRequest('accounts_list');
+                const dl = document.getElementById('accounts-datalist');
+                if (!dl) return;
+                dl.innerHTML = (data.accounts || []).map(a =>
+                    `<option value="${escapeHtml(a.account_number)}">${escapeHtml(a.owner_name)} (${escapeHtml(a.currency)})</option>`
+                ).join('');
+            } catch (e) {
+                console.warn('Не удалось загрузить список счетов:', e.message);
             }
         }
 
@@ -1290,10 +1368,44 @@
             try {
                 const res = await apiRequest('currency_save', 'POST', { code, rate_to_rub: rate, rate_date: rateDate });
                 await loadCurrencies();
+                await loadCurrencyHistory();
                 loadDashboardStats();
                 showToast(res.message || 'Котировка сохранена!');
             } catch (e) {
                 showToast(e.message, true);
+            }
+        }
+
+        async function fetchCurrencyRates() {
+            try {
+                const res = await apiRequest('currencies_fetch', 'POST', {});
+                await loadCurrencies();
+                await loadCurrencyHistory();
+                loadDashboardStats();
+                showToast(res.message, !res.updated);
+            } catch (e) {
+                showToast('Не удалось получить котировки. Оставлены прежние коэффициенты.', true);
+            }
+        }
+
+        async function loadCurrencyHistory() {
+            const tbody = document.querySelector('#currency-history-table tbody');
+            if (!tbody) return;
+            try {
+                const data = await apiRequest('currency_history_list');
+                const rows = data.history || [];
+                tbody.innerHTML = rows.length ? rows.map(r => `
+                    <tr>
+                        <td>${escapeHtml(r.changed_at)}</td>
+                        <td><b>${escapeHtml(r.code)}</b></td>
+                        <td>${r.old_rate !== null ? Number(r.old_rate).toFixed(4) : '—'}</td>
+                        <td><b>${Number(r.new_rate).toFixed(4)}</b></td>
+                        <td>${escapeHtml(r.rate_date)}</td>
+                        <td>${escapeHtml(r.source)}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="6" style="text-align:center;color:#777;">История изменений пока пуста</td></tr>';
+            } catch (e) {
+                console.warn('Не удалось загрузить историю валют:', e.message);
             }
         }
 
@@ -1398,6 +1510,68 @@
             document.getElementById('edit-row-modal').classList.add('show');
         }
 
+        function openReportEdit(index) {
+            const r = lastReportRows[index];
+            if (!r) return;
+            const fieldsEl = document.getElementById('edit-modal-fields');
+            const titleEl = document.getElementById('edit-modal-title');
+            editContext = { kind: r.kind, id: r.id, currency: r.currency || 'RUB', fromReport: true };
+
+            if (r.kind === 'payment') {
+                titleEl.textContent = 'Редактировать платёж ' + r.code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-code', 'ID платежа', r.code) +
+                    fieldHtml('ed-date', 'Дата', r.rep_date, 'date') +
+                    fieldHtml('ed-amount', 'Сумма', r.amount, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.account) +
+                    fieldHtml('ed-sender', 'Счёт отправителя', r.sender_account || '') +
+                    fieldHtml('ed-receiver', 'Счёт получателя', r.receiver_account || '') +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Сформирован', 'Отправлен', 'Изменён', 'Исправлен']);
+            } else if (r.kind === 'position') {
+                titleEl.textContent = 'Редактировать позицию ' + r.code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-date', 'Дата', r.rep_date, 'date') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.account) +
+                    fieldHtml('ed-amount', 'Сумма', r.raw_amount ?? r.amount, 'number') +
+                    fieldHtml('ed-balance', 'Остаток', r.balance ?? r.amount, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Активна', 'Закрыта']);
+            } else {
+                titleEl.textContent = 'Редактировать сделку ' + r.code;
+                fieldsEl.innerHTML =
+                    fieldHtml('ed-code', 'ID сделки', r.code) +
+                    fieldHtml('ed-type', 'Тип сделки', r.category || 'FX Deals', 'select', ['FX Deals', 'MM Deals']) +
+                    fieldHtml('ed-amount', 'Сумма', r.amount, 'number') +
+                    fieldHtml('ed-currency', 'Валюта', r.currency, 'select', ['RUB', 'USD', 'EUR', 'CNY'], 'onchange="convertModalCurrency()"') +
+                    fieldHtml('ed-nostro', 'Счёт НОСТРО', r.account) +
+                    fieldHtml('ed-company', 'Компания', r.company) +
+                    fieldHtml('ed-status', 'Статус', r.status, 'select', ['Активна', 'Исполнена', 'На проверке', 'Закрыта']);
+            }
+
+            document.getElementById('edit-row-modal').classList.add('show');
+        }
+
+        async function deleteReportRow(index) {
+            const r = lastReportRows[index];
+            if (!r) return;
+            const actionMap = { deal: 'deal_delete', payment: 'payment_delete', position: 'position_delete' };
+            const action = actionMap[r.kind];
+            if (!action) return;
+            if (!confirm('Удалить запись ' + r.code + ' из базы данных?')) return;
+            try {
+                const res = await apiRequest(action, 'POST', { id: r.id });
+                await loadReportsTable();
+                loadDashboardStats();
+                loadCompanies();
+                showToast(res.message || 'Запись удалена!');
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
         function closeEditModal() {
             document.getElementById('edit-row-modal').classList.remove('show');
             editContext = null;
@@ -1454,10 +1628,65 @@
                     });
                     loadAccountsTable();
                 }
+                if (editContext.fromReport) loadReportsTable();
+                const savedKind = editContext.kind;
+                const savedBal = document.getElementById('ed-balance') ? parseFloat(document.getElementById('ed-balance').value || '0') : 0;
                 closeEditModal();
                 loadDashboardStats();
                 loadCompanies();
+                if ((savedKind === 'account' || savedKind === 'position') && savedBal < 0) {
+                    alert('Внимание! Зафиксирован отрицательный остаток: ' + formatMoney(savedBal));
+                }
                 showToast('Данные успешно обновлены в БД!');
+            } catch (e) {
+                showToast(e.message, true);
+            }
+        }
+
+        async function deleteRow(kind, index) {
+            let label = '';
+            let action = '';
+            let payload = null;
+            let reloadFn = null;
+
+            if (kind === 'payment') {
+                const r = cachedPayments[index];
+                if (!r) return;
+                label = 'платёж ' + r.payment_code;
+                action = 'payment_delete';
+                payload = { id: r.id };
+                reloadFn = loadPaymentsTable;
+            } else if (kind === 'position') {
+                const r = cachedPositions[index];
+                if (!r) return;
+                label = 'позицию ' + r.position_code;
+                action = 'position_delete';
+                payload = { id: r.id };
+                reloadFn = loadPositionsTable;
+            } else if (kind === 'deal') {
+                const r = cachedDeals[index];
+                if (!r) return;
+                label = 'сделку ' + r.deal_code;
+                action = 'deal_delete';
+                payload = { id: r.id };
+                reloadFn = loadDealsTable;
+            } else if (kind === 'account') {
+                const r = cachedAccounts[index];
+                if (!r) return;
+                label = 'счёт ' + r.account_number;
+                action = 'account_delete';
+                payload = { account_number: r.account_number };
+                reloadFn = loadAccountsTable;
+            }
+
+            if (!confirm('Удалить ' + label + ' из базы данных?')) return;
+
+            try {
+                const res = await apiRequest(action, 'POST', payload);
+                if (reloadFn) await reloadFn();
+                loadDashboardStats();
+                loadCompanies();
+                showToast(res.message || 'Запись удалена!');
             } catch (e) {
                 showToast(e.message, true);
             }
@@ -1505,6 +1734,9 @@
 
             if (!accNumber) { showToast('Введите номер счёта!', true); return; }
             if (newBalanceInput === '') { showToast('Введите новый остаток!', true); return; }
+            if (parseFloat(newBalanceInput) < 0) {
+                alert('Внимание! По счёту ' + accNumber + ' указан отрицательный остаток: ' + formatMoney(newBalanceInput));
+            }
 
             try {
                 const data = await apiRequest('account_update', 'POST', {
@@ -1554,9 +1786,10 @@
                 cachedUsers.forEach((u, index) => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>${u.role}</td>
-                            <td>${u.fio}</td>
-                            <td>${u.password}</td>
+                            <td>${escapeHtml(u.role)}</td>
+                            <td>${escapeHtml(u.fio)}</td>
+                            <td>${escapeHtml(u.password)}</td>
+                            <td>${escapeHtml(u.telegram_chat_id || '—')}</td>
                             <td style="text-align: center;">
                                 <button onclick="editUser(${index})" style="background:#ffc107; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; margin-right:5px;">✏️</button>
                                 <button onclick="deleteUser(${index})" style="background:#dc3545; color:white; border:none; padding:4px 8px; border-radius:3px; cursor:pointer;">🗑️</button>
@@ -1573,6 +1806,7 @@
             const role = document.getElementById('new-user-role').value;
             const fio = document.getElementById('new-user-fio').value.trim();
             const pass = document.getElementById('new-user-pass').value.trim();
+            const tg = document.getElementById('new-user-tg').value.trim();
             const editId = document.getElementById('edit-user-index').value;
 
             if (!fio || !pass) { showToast('Заполните ФИО и Пароль!', true); return; }
@@ -1582,7 +1816,8 @@
                     id: editId !== '' ? parseInt(editId) : null,
                     role: role,
                     fio: fio,
-                    password: pass
+                    password: pass,
+                    telegram_chat_id: tg
                 });
                 await renderUsersTable();
                 showToast(res.message || 'Сохранено!');
@@ -1599,6 +1834,7 @@
             document.getElementById('new-user-role').value = user.role;
             document.getElementById('new-user-fio').value = user.fio;
             document.getElementById('new-user-pass').value = user.password;
+            document.getElementById('new-user-tg').value = user.telegram_chat_id || '';
             document.getElementById('edit-user-index').value = user.id;
 
             document.getElementById('form-title').textContent = 'Редактировать пользователя';
@@ -1613,6 +1849,7 @@
             document.getElementById('new-user-role').selectedIndex = 0;
             document.getElementById('new-user-fio').value = '';
             document.getElementById('new-user-pass').value = '';
+            document.getElementById('new-user-tg').value = '';
 
             document.getElementById('form-title').textContent = 'Добавить пользователя';
             document.getElementById('btn-save-user').textContent = 'Добавить';

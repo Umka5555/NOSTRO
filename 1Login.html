@@ -92,6 +92,31 @@
         text-align: center;
     }
     .error-msg.show { display: block; }
+    .info-msg {
+        display: none;
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+        border-radius: 5px;
+        padding: 8px 10px;
+        font-size: 12px;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+    .info-msg.show { display: block; }
+    .btn-back {
+        width: 100%;
+        padding: 8px;
+        background-color: #6c757d;
+        color: #fff;
+        font-size: 13px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 8px;
+    }
+    .btn-back:hover { background-color: #5a6268; }
 </style>
 </head>
 <body>
@@ -101,8 +126,9 @@
     <div class="subtitle">Авторизация пользователя</div>
 
     <div id="errorMsg" class="error-msg"></div>
+    <div id="infoMsg" class="info-msg"></div>
 
-    <form onsubmit="return handleLogin(event)">
+    <form id="loginForm" onsubmit="return handleLogin(event)">
         <div class="input-group">
             <label for="login">Логин (ФИО):</label>
             <input type="text" id="login" placeholder="Введите ФИО" autocomplete="username">
@@ -113,22 +139,48 @@
         </div>
         <button type="submit" class="btn-login">Войти</button>
     </form>
+
+    <form id="otpForm" style="display:none;" onsubmit="return handleOtpVerify(event)">
+        <div class="input-group">
+            <label for="otpCode">Код из Telegram:</label>
+            <input type="text" id="otpCode" placeholder="Введите 6-значный код" maxlength="6" autocomplete="one-time-code">
+        </div>
+        <button type="submit" class="btn-login">Подтвердить вход</button>
+        <button type="button" class="btn-back" onclick="backToLogin()">Назад</button>
+    </form>
 </div>
 
 <script>
     const MAIN_PAGE = '2HTML.html';
+    let pendingFio = '';
 
     function showError(text) {
         const box = document.getElementById('errorMsg');
         box.textContent = text;
         box.classList.add('show');
-        document.getElementById('login').classList.add('error');
-        document.getElementById('password').classList.add('error');
+        document.getElementById('infoMsg').classList.remove('show');
+    }
+    function showInfo(text) {
+        const box = document.getElementById('infoMsg');
+        box.textContent = text;
+        box.classList.add('show');
+        document.getElementById('errorMsg').classList.remove('show');
     }
     function clearError() {
         document.getElementById('errorMsg').classList.remove('show');
         document.getElementById('login').classList.remove('error');
         document.getElementById('password').classList.remove('error');
+        document.getElementById('otpCode').classList.remove('error');
+    }
+
+    function backToLogin() {
+        pendingFio = '';
+        document.getElementById('otpForm').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('otpCode').value = '';
+        document.getElementById('infoMsg').classList.remove('show');
+        clearError();
+        document.getElementById('login').focus();
     }
 
     async function handleLogin(event) {
@@ -151,6 +203,14 @@
                 showError(data.error || 'Неверный логин или пароль!');
                 return false;
             }
+            if (data.requires_2fa) {
+                pendingFio = data.fio || login;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('otpForm').style.display = 'block';
+                showInfo(data.message || 'Код подтверждения отправлен в Telegram!');
+                document.getElementById('otpCode').focus();
+                return false;
+            }
             sessionStorage.setItem('auth_user', JSON.stringify(data.user));
             window.location.href = MAIN_PAGE;
         } catch (err) {
@@ -159,9 +219,35 @@
         return false;
     }
 
+    async function handleOtpVerify(event) {
+        event.preventDefault();
+        clearError();
+
+        const code = document.getElementById('otpCode').value.trim();
+        if (!code) { showError('Введите код подтверждения из Telegram!'); return false; }
+
+        try {
+            const res = await fetch('api.php?action=verify_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fio: pendingFio, code: code })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) {
+                showError(data.error || 'Неверный код подтверждения!');
+                return false;
+            }
+            sessionStorage.setItem('auth_user', JSON.stringify(data.user));
+            window.location.href = MAIN_PAGE;
+        } catch (err) {
+            showError('Ошибка соединения с сервером');
+        }
+        return false;
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('login').focus();
-        ['login', 'password'].forEach(id => {
+        ['login', 'password', 'otpCode'].forEach(id => {
             document.getElementById(id).addEventListener('input', clearError);
         });
     });
